@@ -181,12 +181,42 @@ echo '</tr>';
 			<!-- <td style="width:35%"> <p align="right" style="padding-right: 70px; font-size: 15px"><u><strong>MARITESS M. OCAMPO</strong></u> </br>
 			 OIC, Regional Executive Director </p></td> -->
 
-			 <td style="width:35%; text-align:center;">
-    <p style="font-size: 15px; padding-right: 0px;">
-        <u><strong>MARITESS M. OCAMPO</strong></u><br/>
-        OIC, Regional Executive Director
-    </p>
-</td>
+			<?php
+			// Determine which signatory to show based on current month-day
+			$md = date('m-d');
+
+			// MARITESS M. OCAMPO: July 15 through May 30 (crosses year boundary)
+			// MA. THERESA J. ALLEN: June 3 through July 14
+			if ($md >= '07-15' || $md <= '05-30') {
+				?>
+				<td style="width:35%; text-align:center;">
+					<p style="font-size: 15px; padding-right: 0px;">
+						<u><strong>MARITESS M. OCAMPO</strong></u><br/>
+						OIC, Regional Executive Director
+					</p>
+				</td>
+				<?php
+			} elseif ($md >= '06-03' && $md <= '07-14') {
+				?>
+				<td style="width:35%; text-align:center;">
+					<p style="font-size: 15px; padding-right: 0px;">
+						<u><strong>MA. THERESA J. ALLEN</strong></u><br/>
+						OIC, Regional Executive Director
+					</p>
+				</td>
+				<?php
+			} else {
+				// Fallback to MARITESS for any unspecified small gaps
+				?>
+				<td style="width:35%; text-align:center;">
+					<p style="font-size: 15px; padding-right: 0px;">
+						<u><strong>MARITESS M. OCAMPO</strong></u><br/>
+						OIC, Regional Executive Director
+					</p>
+				</td>
+				<?php
+			}
+			?>
 
 
 
