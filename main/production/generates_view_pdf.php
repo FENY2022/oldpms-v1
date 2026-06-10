@@ -75,6 +75,9 @@ $month = $result["month"];
 $year =  $result["year"];
 $Others =  $result["Others"];
 
+$monthNum = date('m', strtotime($month));
+$date_applied = sprintf("%04d-%02d-%02d", $year, $monthNum, $day);
+
 // $lumber_app_id = $_POST["lumber_app_id"];
 // $name = $_POST["name"];
 // $address = $_POST["address"];
@@ -99,7 +102,7 @@ $Flow_stat = $result['Flow_stat'];
 
 // Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature 
 
-    $lumber_app = "SELECT * FROM signatory_managerdb where official_station = '$_office_cover' && signature_type = 'Certification' && signature_order = '1'";
+    $lumber_app = "SELECT * FROM signatory_managerdb WHERE official_station = '$_office_cover' AND signature_type = 'Certification' AND signature_order = '1' AND ('$date_applied' >= date_started AND (date_ended = '' OR '$date_applied' <= date_ended))";
     $lumber_app_qry = mysqli_query($con, $lumber_app);
     $lumber_ap_row22 = mysqli_fetch_assoc($lumber_app_qry);
     $signature_1 = $lumber_ap_row22['signature_file'];
@@ -120,7 +123,7 @@ $Flow_stat = $result['Flow_stat'];
 
 // Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature 
 
-    $lumber_app = "SELECT * FROM signatory_managerdb where official_station = '$_office_cover' && signature_type = 'Certification' && signature_order = '2'";
+    $lumber_app = "SELECT * FROM signatory_managerdb WHERE official_station = '$_office_cover' AND signature_type = 'Certification' AND signature_order = '2' AND ('$date_applied' >= date_started AND (date_ended = '' OR '$date_applied' <= date_ended))";
     $lumber_app_qry = mysqli_query($con, $lumber_app);
     $lumber_ap_row33 = mysqli_fetch_assoc($lumber_app_qry);
     $signature_2 = $lumber_ap_row33['signature_file'];

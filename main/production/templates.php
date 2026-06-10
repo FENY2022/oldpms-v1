@@ -133,7 +133,9 @@ function formatDaySuffix($day) {
 }
 
 // Usage example:// Replace this with your variable $day
-$formattedDay = formatDaySuffix($day);
+echo $formattedDay = formatDaySuffix($day);
+
+
 ?>
 
 
