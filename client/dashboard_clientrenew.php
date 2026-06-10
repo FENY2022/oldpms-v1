@@ -250,7 +250,7 @@ if (isset($_POST['num']) && !empty($reg)) {
                                                 <input readonly style="width: 330px; margin-top: 10px;" type="text" class="form-control" placeholder="Permit Type*" aria-label="Application Type" name="permit_type" value="<?php echo htmlspecialchars($Permit_Type); ?>" required>
                                             </div>
                                             <div class="col">
-                                                <input readonly style="width: 330px; margin-top: 10px;" type="text" class="form-control" placeholder="Business Name*" aria-label="Business name" name="bussiness_name" value="<?php echo htmlspecialchars($bussiness_name); ?>">
+                                                <input  style="width: 330px; margin-top: 10px;" type="text" class="form-control" placeholder="Business Name*" aria-label="Business name" name="bussiness_name" value="<?php echo htmlspecialchars($bussiness_name); ?>">
                                             </div>
                                         </div>
 

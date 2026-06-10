@@ -3,25 +3,33 @@
     include('../../config.php');
     if (isset($_POST['btn'])) {
 
-
-
+        // Re-fetch protected fields from DB using registration number to prevent tampering
+        $reg_num = isset($_POST['num']) ? $_POST['num'] : '';
+        if (!empty($reg_num)) {
+            $stmt = $connection->prepare("SELECT * FROM lumber_application WHERE Registration_Number = :reg");
+            $stmt->bindParam("reg", $reg_num, PDO::PARAM_STR);
+            $stmt->execute();
+            $db_row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($db_row) {
+                // Override POST values with database values for readonly fields
+                $_POST['perm_fname'] = $db_row['perm_fname'];
+                $_POST['perm_lname'] = $db_row['perm_lname'];
+                $_POST['permit_type'] = $db_row['Permit_Type'];
+                $_POST['bussiness_name'] = $db_row['bussiness_name'];
+                $_POST['province'] = $db_row['prov_code'];
+                $_POST['citymun'] = $db_row['muncity_code'];
+                $_POST['brgy'] = $db_row['brgy_code'];
+                $_POST['purok'] = $db_row['purok'];
+            }
+        }
 
         $perm_fname = $_POST['perm_fname'];
         $perm_lname = $_POST['perm_lname'];
         $perm_email = $_POST['perm_email'];
         $perm_contact =  $_POST['perm_contact'];
         $permit_type = $_POST['permit_type'];
-        // $application_type = $_POST['application_type'];
 
-
-
-
-
-        // $application_type = $_POST['application_type'];
         $bussiness_name = $_POST['bussiness_name'];
-
-    
-
 
         $purok = $_POST['purok'];
 
