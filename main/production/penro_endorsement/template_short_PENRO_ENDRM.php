@@ -108,7 +108,7 @@ if (isset($_POST['lumber_app_id']))
 		 <tr>
 		 <td style="width:13%;padding-bottom:37px;"><strong>SUBJECT</strong></td>
 		 <td style="width:7%;padding-bottom:37px;"><strong>:</strong></td>
-		 <td style="width:80%;text-transform:uppercase;text-align:justify; padding-bottom:20px;"><strong><?php echo $Status_; ?> APPLICATION OF <?php echo $bussiness_name; ?> FOR CERTIFICATE OF REGISTRATION AS LUMBER DEALER LOCATED AT <?php echo $full_address; ?>.</strong></td>
+		 <td style="width:80%;text-transform:uppercase;text-align:justify; padding-bottom:20px;"><strong><?php echo $Flow_stat; ?> APPLICATION OF <?php echo $bussiness_name; ?> FOR CERTIFICATE OF REGISTRATION AS LUMBER DEALER LOCATED AT <?php echo $full_address; ?>.</strong></td>
 		 </tr>
 	</table>
     <table>
@@ -122,7 +122,7 @@ if (isset($_POST['lumber_app_id']))
     <br/>
    <hr style="width:100%;text-align:left;margin-left:0">
    <br/>
-   <p class="col-sm-9" style="text-align:justify;"> &nbsp; &nbsp; &nbsp; &nbsp; Respecfully forwarded is the <?php echo strtolower($Status_) ;?> application for Certificate of Registration as Lumber Dealer of <?php echo $bussiness_name ; ?> located at <?php echo $full_address ; ?> FOR CERTIFICATE OF REGISTRATION AS LUMBER DEALER LOCATED AT <?php echo $full_address ; ?>.</p>
+   <p class="col-sm-9" style="text-align:justify;"> &nbsp; &nbsp; &nbsp; &nbsp; Respecfully forwarded is the <?php echo strtolower($Flow_stat) ;?> application for Certificate of Registration as Lumber Dealer of <?php echo $bussiness_name ; ?> located at <?php echo $full_address ; ?> FOR CERTIFICATE OF REGISTRATION AS LUMBER DEALER LOCATED AT <?php echo $full_address ; ?>.</p>
    <dt class="col-sm-3">Please be apprised of the following information regarding the subject application:</dt>
 	<br/>
    <dd class="col-sm-9" style="text-align:justify;">a.) <strong><?php echo $ldname = $bussiness_name ; ?></strong> is a single proprietor owned and managed by <?php echo $full_name ; ?> with a business operation at <strong><?php echo $ldaddress = $full_address ; ?></strong>. The proponent's objective are: to provide employment opportunities; and to firmly established a functional lumber yard in order to cater lumber needs of the growing economic activity in the locality and other neighboring municipalities and provinces;</dd>

@@ -12,6 +12,8 @@ require_once "../../../processphp/config.php";
 $lumber_app_id = $_GET['lumber_app_id'];
 
 $formattedDate = date('F j, Y');
+
+$Status_ = 'ENDORSEMENT';
 $stmt = $con->prepare("UPDATE c_endorsement SET date_penro = ? WHERE lumber_app_id = ?");
 $stmt->bind_param("si", $formattedDate, $lumber_app_id);
 

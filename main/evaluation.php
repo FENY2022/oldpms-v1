@@ -259,7 +259,7 @@ if($result) {
                       <div class="row">
                           <div class="col-sm-12">
                             <div class="card-box table-responsive">
-        						<table id="datatable-responsive" class="table table-striped table-bordered" style="width:100%">
+        						<table id="evaluation-table" class="table table-striped table-bordered" style="width:100%">
 								   <thead class="bg-primary text-white">                        	
 										  <tr>
 											  <th> No. </th>
@@ -287,7 +287,8 @@ if($result) {
                 <?php
 
 
-          $stmt = $connection->query("SELECT * FROM lumber_app_doc_erow  where lumber_app_id = $l_id ORDER BY doc_type_name");
+          $stmt = $connection->query("SELECT * FROM lumber_app_doc_erow  where lumber_app_id = $l_id ORDER BY Number_of_doc ASC");
+          $i = 1;
           while ( $row = $stmt->fetch(PDO::FETCH_ASSOC) ) 
           
           {
@@ -307,7 +308,7 @@ if($result) {
 
 
                 echo "<tr><td>" ;
-                echo(htmlentities($row['Number_of_doc']));
+                echo $i++;
                 echo("</td><td>");
                 echo(htmlentities($row['doc_type_name']));
                 echo("</td><td>");
@@ -446,6 +447,21 @@ if($result) {
 
     <!-- Custom Theme Scripts -->
     <script src="build/js/custom.js"></script>
+
+    <script>
+      $(document).ready(function() {
+        $('#evaluation-table').DataTable({
+          pageLength: 5,
+          lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+          language: {
+            paginate: {
+              previous: "Previous",
+              next: "Next"
+            }
+          }
+        });
+      });
+    </script>
 
   </body>
 </html>
