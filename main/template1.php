@@ -234,5 +234,5 @@ echo '</tr>';
 		</tr>
 	</table>
 </div>
-</body>
-</html>
+ </body>
+ </html>

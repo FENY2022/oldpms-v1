@@ -108,7 +108,7 @@ if (isset($_POST['lumber_app_id']))
 		 <tr>
 		 <td style="width:13%;padding-bottom:37px;"><strong>SUBJECT</strong></td>
 		 <td style="width:7%;padding-bottom:37px;"><strong>:</strong></td>
-		 <td style="width:80%;text-transform:uppercase;text-align:justify; padding-bottom:20px;"><strong><?php echo $Flow_stat; ?> APPLICATION OF <?php echo $bussiness_name; ?> FOR CERTIFICATE OF REGISTRATION AS LUMBER DEALER LOCATED AT <?php echo $full_address; ?>.</strong></td>
+		 <td style="width:80%;text-transform:uppercase;text-align:justify; padding-bottom:20px;"><strong>APPLICATION OF <?php echo $bussiness_name; ?> FOR CERTIFICATE OF REGISTRATION AS LUMBER DEALER LOCATED AT <?php echo $full_address; ?>.</strong></td>
 		 </tr>
 	</table>
     <table>
@@ -253,6 +253,4 @@ if (($Flow_stat) >= ('12')) {
 </body>
 </html>
 
-<?php
-
-                            ?>
+  
