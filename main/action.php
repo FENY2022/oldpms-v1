@@ -99,9 +99,9 @@ include('../processphp/config.php');
           <div class="">
             <div class="page-title">
               <div class="title_left">
-				  <h3 class="text-success"><strong>For Action</strong> <small>  | Lumber Dealers of Caraga Region</small></h3>
-              </div>              
-            </div>
+				       <h3 class="text-success"><strong>For Action</strong> <small>  | Lumber Dealers of Caraga Region</small></h3>
+            </div>              
+          </div>
 
             <div class="clearfix"></div>
 
@@ -116,9 +116,9 @@ include('../processphp/config.php');
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" href="#">Agusan del Norte</a>
                             <a class="dropdown-item" href="#">Agusan del Sur</a>
-							<a class="dropdown-item" href="#">Surigao del Norte</a>
+						                	<a class="dropdown-item" href="#">Surigao del Norte</a>
                             <a class="dropdown-item" href="#">Surigao del Sur</a>
-							<a class="dropdown-item" href="#">Dinagat Island</a>
+						              	<a class="dropdown-item" href="#">Dinagat Island</a>
                         </div>
                       </li>                      
                     </ul>
@@ -141,7 +141,8 @@ include('../processphp/config.php');
 											<th>CENROs Concerned</th>
 											<th>New / Renewal</th>
 
-                                            <th>Status</th>      
+                                            <th>Status</th>
+                                            <th>Recent History</th>      
                                             <th>Action</th>                                     
                                         </tr>
                                      </thead>                                                                  
@@ -182,7 +183,7 @@ include('../processphp/config.php');
 
   if (($user_role) == ('12.5')){
 
-    $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks FROM lumber_application 
+    $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks, (SELECT CONCAT(Title, ' - ', Date, ' ', Time) FROM client_client_document_history WHERE lumber_app_id = lumber_application.lumber_app_id ORDER BY id DESC LIMIT 1) as recent_history FROM lumber_application 
     where Flow_stat = '12.5' ");
   
     }
@@ -191,7 +192,7 @@ include('../processphp/config.php');
 
   if (($user_role) == ('13')){
 
-    $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks FROM lumber_application 
+    $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks, (SELECT CONCAT(Title, ' - ', Date, ' ', Time) FROM client_client_document_history WHERE lumber_app_id = lumber_application.lumber_app_id ORDER BY id DESC LIMIT 1) as recent_history FROM lumber_application 
     where Flow_stat = '13' ");
 
     }
@@ -200,21 +201,21 @@ include('../processphp/config.php');
 
   if (($user_role) == ('14')){
 
-    $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks FROM lumber_application 
+    $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks, (SELECT CONCAT(Title, ' - ', Date, ' ', Time) FROM client_client_document_history WHERE lumber_app_id = lumber_application.lumber_app_id ORDER BY id DESC LIMIT 1) as recent_history FROM lumber_application 
     where Flow_stat = '14' ");
   
     }
 
     if (($user_role) == ('15')){
 
-      $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks FROM lumber_application 
+      $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks, (SELECT CONCAT(Title, ' - ', Date, ' ', Time) FROM client_client_document_history WHERE lumber_app_id = lumber_application.lumber_app_id ORDER BY id DESC LIMIT 1) as recent_history FROM lumber_application 
       where Flow_stat = '15' ");
     
       }
 
       if (($user_role) == ('16')){
 
-        $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks FROM lumber_application 
+        $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks, (SELECT CONCAT(Title, ' - ', Date, ' ', Time) FROM client_client_document_history WHERE lumber_app_id = lumber_application.lumber_app_id ORDER BY id DESC LIMIT 1) as recent_history FROM lumber_application 
         where Flow_stat = '16' ");
       
         }
@@ -222,7 +223,7 @@ include('../processphp/config.php');
         
       if (($user_role) == ('17')){
 
-        $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks FROM lumber_application 
+        $stmt = $connection->query("SELECT  Application_status, perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, Status_, Remarks, (SELECT CONCAT(Title, ' - ', Date, ' ', Time) FROM client_client_document_history WHERE lumber_app_id = lumber_application.lumber_app_id ORDER BY id DESC LIMIT 1) as recent_history FROM lumber_application 
         where Flow_stat = '17' ");
       
         }
@@ -301,6 +302,8 @@ include('../processphp/config.php');
                   echo('<a class="badge badge-danger" >For review CENRO FUU</a>');
                   // echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
                   echo("</td><td>");
+                  echo(htmlentities($row['recent_history'] ?? '-'));
+                  echo("</td><td>");
             
                   echo('<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#evaluationModal'.$row['lumber_app_id'].'">View</button>');
                
@@ -312,6 +315,8 @@ include('../processphp/config.php');
 				if (($row['Status']) == ($ForReceive_ROFUS)){
           echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
           echo("</td><td>");
+          echo(htmlentities($row['recent_history'] ?? '-'));
+          echo("</td><td>");
 					echo('<a class="btn btn-warning" href="prc_receive.php?lumber_app_id='.$row['lumber_app_id'].'">Receive</a>');
 
 				  }
@@ -321,6 +326,8 @@ include('../processphp/config.php');
 	
           echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
           echo("</td><td>");
+          echo(htmlentities($row['recent_history'] ?? '-'));
+          echo("</td><td>");
 					echo('<a class="btn btn-warning" href="evaluation.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
 
@@ -329,6 +336,8 @@ include('../processphp/config.php');
           elseif (($row['Status']) == ($Review_LPDD)){
 
             echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
+            echo("</td><td>");
+            echo(htmlentities($row['recent_history'] ?? '-'));
             echo("</td><td>");
             echo('<a class="btn btn-warning" href="evaluationlpdd.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
@@ -340,12 +349,16 @@ include('../processphp/config.php');
           elseif (($row['Status']) == ($For_Recommend_RO)){
             echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
             echo("</td><td>");
+            echo(htmlentities($row['recent_history'] ?? '-'));
+            echo("</td><td>");
             echo('<a class="btn btn-warning" href="evaluationlRORecommender.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
             }
   
           elseif (($row['Status']) == ($For_Approval_RED)){
             echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
+            echo("</td><td>");
+            echo(htmlentities($row['recent_history'] ?? '-'));
             echo("</td><td>");
             echo('<a class="btn btn-warning" href="evaluationROapprover.php?lumber_app_id='.$row['lumber_app_id'].'&bussiness_name='.$row['bussiness_name'].'&full_address='.$row['full_address'].'">Review</a>');
             
@@ -355,6 +368,8 @@ include('../processphp/config.php');
 
             echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
             echo("</td><td>");
+            echo(htmlentities($row['recent_history'] ?? '-'));
+            echo("</td><td>");
             echo('<a class="btn btn-warning" href="records/action.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
 
@@ -363,6 +378,8 @@ include('../processphp/config.php');
             elseif (($row['Status']) == ($For_review_R_RO_FUS)){
             echo('<a class="badge badge-warning" >For review RO FUS</a>');
             // echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
+            echo("</td><td>");
+            echo(htmlentities($row['recent_history'] ?? '-'));
             echo("</td><td>");
             echo('<a class="btn btn-warning" href="evaluation_R_FUS.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
