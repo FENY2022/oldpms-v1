@@ -682,16 +682,24 @@ if (isset($_POST['remarks'])){
                             <h5 class='modal-title' id='nocertificationLabel" . $row['lumber_app_id'] . "'>No Certification</h5>
                             <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
                         </div>
-                        <div class='modal-body'>
-                            Are you sure you want to proceed with no certification for application ID: " . $row['lumber_app_id'] . "?
-                        </div>
-                        <div class='modal-footer'>
-                            <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancel</button>
-                            <form method='POST' action='process_no_certification.php' style='display:inline;'>
+                        <form method='POST' action='process_no_certification.php' enctype='multipart/form-data'>
+                            <div class='modal-body'>
+                                <p>Proceed with no certification for application ID: " . $row['lumber_app_id'] . "?</p>
+                                <div class='mb-3'>
+                                    <label for='nocert_remarks" . $row['lumber_app_id'] . "' class='form-label'>Remarks (Why no certification?)</label>
+                                    <textarea class='form-control' id='nocert_remarks" . $row['lumber_app_id'] . "' name='remarks' rows='4' required></textarea>
+                                </div>
+                                <div class='mb-3'>
+                                    <label for='nocert_file" . $row['lumber_app_id'] . "' class='form-label'>Upload Supporting Documents</label>
+                                    <input class='form-control' type='file' id='nocert_file" . $row['lumber_app_id'] . "' name='supporting_doc' accept='.pdf,.jpg,.jpeg,.png'>
+                                </div>
+                            </div>
+                            <div class='modal-footer'>
+                                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancel</button>
                                 <input type='hidden' name='lumber_app_id' value='" . $row['lumber_app_id'] . "'>
-                                <button type='submit' class='btn btn-danger'>Confirm</button>
-                            </form>
-                        </div>
+                                <button type='submit' class='btn btn-danger' name='submit_no_cert'>Confirm</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>";
