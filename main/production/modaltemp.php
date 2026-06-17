@@ -50,17 +50,7 @@
 </script>
 
 
-<script>
-        function enableForwardButton() {
-            // Enable the "Forward to Chief RPS" button
-            const forwardButton = document.getElementById("forwardButton");
-            forwardButton.disabled = false;
 
-            // Change the "Endorse Lumber Dealer" button type to "submit"
-            const endorseButton = document.getElementById("endorseButton");
-            endorseButton.setAttribute("type", "submit");
-        }
-    </script>
 
 <div id="myModal1" class="modal fade" role="dialog">
 <div class="modal-dialog modal-xl">
@@ -465,8 +455,7 @@ echo '<script>
 
 
 			</div>
-</div>                        
-
+            </div>
 
 <div class="col-sm-4">
 
@@ -630,9 +619,77 @@ echo '<script>
             <!-- Section 2 -->
             <div class="form-section" id="section2" style="display:none;">
   
-                <button type="button" id="endorseButton" class="btn btn-primary" onclick="enableForwardButton()">Endorse Lumber Dealer</button>
+                <button type="button" id="endorseButton" class="btn btn-primary" data-toggle="modal" data-target="#endorseModal">Endorse Lumber Dealer</button>
 
             </div>
+
+            <!-- Endorse Modal -->
+            <div id="endorseModal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">ONLINE LUMBER DEALER PERMITTING AND MONITORING SYSTEM</h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <iframe src="penro_endorsement/endorsement_PENRO_modal.php?lumber_app_id=<?php echo $l_id; ?>" frameborder="0" width="100%" height="600px"></iframe>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmModal">Forward to RPS</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirm Forward Modal -->
+            <div id="confirmModal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirm Forward</h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to forward this application to RPS?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form method="post">
+                                <input type="submit" name="update_button" value="Yes, Forward to RPS" class="btn btn-success">
+                            </form>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Species Modal -->
+            <div id="speciesModal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add Wood Species</h5>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <iframe id="speciesIframe" src="" frameborder="0" width="100%" height="500px"></iframe>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                $(document).ready(function(){
+                    $('.btn-species').click(function(){
+                        var endorsementId = $(this).data('endorsement-id');
+                        var lumberId = $(this).data('lumber-id');
+                        $('#speciesIframe').attr('src', 'add_wood_species_endorse.php?endorsement_id=' + endorsementId + '&lumber_app_id=' + lumberId);
+                    });
+                });
+            </script>
 
 
    </form>
@@ -700,10 +757,7 @@ echo '<script>
       Action
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-       <li><form  method="post" action="add_wood_species_endorse.php" target="_blank" >
-       <input hidden type="text" name="endorsement_id"  value="'.$row['ID'].'" >
-       <input hidden type="text" name="lumber_app_id"  value="'.$row['lumber_app_id'].'" >
-       <button class="dropdown-item bg-success text-white" type="submit" class="btn btn-success"> Add Species </button></form></li>
+       <li><button class="dropdown-item bg-success text-white btn-species" data-endorsement-id="'.$row['ID'].'" data-lumber-id="'.$row['lumber_app_id'].'" data-toggle="modal" data-target="#speciesModal"> Add Species </button></li>
 
        <li><form  method="post"><input hidden type="text" name="delete_row"  value="'.$row['ID'].'" ><button class="dropdown-item bg-danger text-white" type="submit" class="btn btn-danger"> Delete </button></form></li>';
     
@@ -744,15 +798,6 @@ echo '<script>
 
 
 
-            <!-- Section 3 -->
-            <div class="form-section" id="section3" style="display:none;">
-
-
-            <form method="post">
-              <input type="submit" name="update_button" id="forwardButton" value="Forward to Chief RPS" class="btn btn-success" disabled>
-              </form>
-            </div>
-
             <!-- Navigation Buttons -->
             <div class="form-navigation">
                 <button type="button" id="prevBtn" onclick="prevSection()">Previous</button>
@@ -770,23 +815,12 @@ echo '<script>
             });
             document.getElementById(`section${sectionNumber}`).style.display = 'block';
 
-            if (sectionNumber === 1) {
-                document.getElementById('prevBtn').style.display = 'none';
-            } else {
-                document.getElementById('prevBtn').style.display = 'inline-block';
-            }
-
-            if (sectionNumber === 3) {
-                document.getElementById('nextBtn').style.display = 'none';
-                document.getElementById('submitBtn').style.display = 'inline-block';
-            } else {
-                document.getElementById('nextBtn').style.display = 'inline-block';
-                document.getElementById('submitBtn').style.display = 'none';
-            }
+            document.getElementById('prevBtn').style.display = sectionNumber === 1 ? 'none' : 'inline-block';
+            document.getElementById('nextBtn').style.display = sectionNumber === 2 ? 'none' : 'inline-block';
         }
 
         function nextSection() {
-            if (currentSection < 3) {
+            if (currentSection < 2) {
                 currentSection++;
                 showSection(currentSection);
             }
@@ -799,7 +833,6 @@ echo '<script>
             }
         }
 
-        // Initialize the form with the first section visible
         showSection(currentSection);
     </script>
 
