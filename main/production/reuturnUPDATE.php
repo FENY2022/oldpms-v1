@@ -243,6 +243,37 @@ echo "<script>window.location.href = 'application.php';</script>";
 
   }
 
+if (isset($_POST['no_certification_doc'])) {
+    $lumber_app_id = $_POST['lumber_app_id'];
+    
+    $doc_type_name = 'NO Certification New Registration';
+    $doc_status = 'NO Certification New Registration';
+    $doc_app_ind = 'For Review (CG)';
+    $Number_of_doc = '9';
+    $date2 = date('m/d/y');
+    
+    $sql = "UPDATE lumber_app_doc_erow SET 
+            doc_type_name = :doc_type_name,
+            doc_status = :doc_status,
+            doc_app_ind = :doc_app_ind,
+            date_applied = :date_applied
+            WHERE lumber_app_id = :lumber_app_id AND Number_of_doc = :Number_of_doc";
+    $stmt = $connection->prepare($sql);
+    $stmt->execute(array(
+        ':doc_type_name' => $doc_type_name,
+        ':doc_status' => $doc_status,
+        ':doc_app_ind' => $doc_app_ind,
+        ':date_applied' => $date2,
+        ':lumber_app_id' => $lumber_app_id,
+        ':Number_of_doc' => $Number_of_doc
+    ));
+    
+    echo "<script>
+        alert('Document marked as NO Certification New Registration');
+        window.location.href = 'reuturnUPDATE.php?lumber_app_id=$lumber_app_id';
+    </script>";
+}
+
 ?>
 
 
@@ -391,7 +422,12 @@ echo "<script>window.location.href = 'application.php';</script>";
 </div>
 
 
-            <h2>Click the Document Status to View</h2>
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Click the Document Status to View</h2>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#turnBackModal">
+                    <i class="fa fa-check-circle"></i> Comply
+                </button>
+            </div>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -413,31 +449,9 @@ echo "<script>window.location.href = 'application.php';</script>";
                    <div class="x_content">
                       <div class="row">
                           <div class="col-sm-12">
-                            <div class="card-box table-responsive">
-                    <table id="datatable-responsive" class="table table-striped table-bordered" style="width:100%">
-                      <thead>
-                        <tr>
-                          <tr>
-                            <th> Doc No. </th>
-                            <th> Document Name </th>
-                            <th> Status </th>
-                            <th> Action </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                         
-  
-
-
-                        <?php
-                        require_once "../../processphp/config.php";
-                        // session_start();
-                        
-                   ?>
-                        
-
+                             <div class="card-box">
+                <div class="row">
                 <?php
-
 
           $stmt = $connection->query("SELECT * FROM lumber_app_doc_erow where lumber_app_id = $l_id");
           while ( $row = $stmt->fetch(PDO::FETCH_ASSOC) ) 
@@ -451,93 +465,79 @@ echo "<script>window.location.href = 'application.php';</script>";
               $For_Review_CG = 'For Review (CG)' ;
               $Approved_CG = 'Approved (CG)';
 
-                echo "<tr><td>" ;
-                echo(htmlentities($row['Number_of_doc']));
-                echo("</td><td>");
-                echo(htmlentities($row['doc_type_name']));
-                echo("</td><td>");
-
-                // echo('<a class="btn btn-warning" "'($row['doc_type_name'])'"");
-                // echo(htmlentities($row['doc_status']) . '' . ($row['perm_lname']));
-     
-
-
-       
-                // echo(htmlentities($row['application_type']));
-                // echo("</td><td>");
+              echo '
+              <div class="col-md-4 col-sm-6 mb-3">
+                <div class="card">
+                  <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="badge badge-secondary">Doc No. '.htmlentities($row['Number_of_doc']).'</span>
+                    <span class="small text-muted">'.htmlentities($row['doc_type_name']).'</span>
+                  </div>
+                  <div class="card-body">
+                    <h6 class="card-title">'.htmlentities($row['doc_type_name']).'</h6>';
+                    
                 if (($row['doc_status']) == ($Review)){
-                echo(htmlentities ('Reviewed') );
-                // echo(htmlentities ($row['doc_status']) );
-                echo("</td><td>");
-                echo('<a class="btn btn-warning" href="modal_viewer.php?upload_id_doc='.$row['upload_id_doc'].'">View </a>');
-                
-      
-                // echo('<a class="btn btn-warning" data-toggle="modal" data-target="#myModal1" >Review </a>');
-              
+                    echo '<p class="card-text"><span class="badge badge-success">Reviewed</span></p>';
+                    echo '<a class="btn btn-warning btn-sm" href="modal_viewer.php?upload_id_doc='.$row['upload_id_doc'].'">View</a>';
                 }elseif (($row['doc_status']) == ($Review2)){
-                echo(htmlentities ($row['doc_status']) );
-                echo("</td><td>");
-                echo('<a class="btn btn-warning" href="modaltempVIEWER.php?lumber_app_id='.$row['lumber_app_id'].'">Review </a>');
-                 
-
-
+                    echo '<p class="card-text"><span class="badge badge-warning">'.htmlentities($row['doc_status']).'</span></p>';
+                    echo '<a class="btn btn-warning btn-sm" href="modaltempVIEWER.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>';
                 }elseif (($row['doc_status']) == ($For_Review_FG)){
-                  echo(htmlentities ($row['doc_status']) );
-                  echo("</td><td>");
-                  echo('<a class="btn btn-warning" href="modaltempVIEWER.php?lumber_app_id='.$row['lumber_app_id'].'">Review </a>');
-
+                    echo '<p class="card-text"><span class="badge badge-warning">'.htmlentities($row['doc_status']).'</span></p>';
+                    echo '<a class="btn btn-warning btn-sm" href="modaltempVIEWER.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>';
                 }elseif (($row['doc_status']) == ($ApprovedFG)){
-                echo(htmlentities ('Reviewed') );
-                // echo(htmlentities ($row['doc_status']) );
-                echo("</td><td>");
-                echo('<a class="btn btn-warning" href="modaltempVIEWER.php?lumber_app_id='.$row['lumber_app_id'].'">View </a>');
-
+                    echo '<p class="card-text"><span class="badge badge-success">Reviewed</span></p>';
+                    echo '<a class="btn btn-warning btn-sm" href="modaltempVIEWER.php?lumber_app_id='.$row['lumber_app_id'].'">View</a>';
                 }elseif (($row['doc_status']) == ($For_Review_CG)){
-                  echo(htmlentities ($row['doc_status']) );
-                  echo("</td><td>");
-                echo('<a class="btn btn-warning" target="_blank" href="generates_view_pdf_DMOIV.php?lumber_app_id='.$row['lumber_app_id'].'">View </a>');
-
+                    echo '<p class="card-text"><span class="badge badge-warning">'.htmlentities($row['doc_status']).'</span></p>';
+                    echo '<a class="btn btn-warning btn-sm" target="_blank" href="generates_view_pdf_DMOIV.php?lumber_app_id='.$row['lumber_app_id'].'">View</a>';
                 }elseif (($row['doc_status']) == ($Approved_CG)){
-                echo(htmlentities ('Reviewed') );
-                // echo(htmlentities ($row['doc_status']) );
-                echo("</td><td>");
-                // echo('<a class="btn btn-warning" target="_blank" href="endorsement_PENRO_modal.php?lumber_app_id='.$row['lumber_app_id'].'">View</a>');
-                echo('
-                
-                <form method="post" action="generates_view_pdf.php" target="_blank" > 
-                <input hidden type="text" value="'.$row['lumber_app_id'].'" name="lumber_app_id" ></input>
-                <button type="submit" class="btn btn-warning" ">View</button>
-                </form>
-                
-                ');
+                    echo '<p class="card-text"><span class="badge badge-success">Reviewed</span></p>';
+                    echo '
+                    <form method="post" action="generates_view_pdf.php" target="_blank" style="display:inline">
+                      <input hidden type="text" value="'.$row['lumber_app_id'].'" name="lumber_app_id">
+                      <button type="submit" class="btn btn-warning btn-sm">View</button>
+                    </form>';
                 }
 
+                // Add "No Certification" button for document number 9
+                if ($row['Number_of_doc'] == '9') {
+                    echo '<button type="button" class="btn btn-danger btn-sm ml-1" data-toggle="modal" data-target="#noCertModal'.$row['lumber_app_id'].'">No Certification</button>';
+                    echo '
+                    <div class="modal fade" id="noCertModal'.$row['lumber_app_id'].'" tabindex="-1" role="dialog" aria-labelledby="noCertModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="noCertModalLabel">No Certification</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="POST">
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lumber_app_id" value="'.$row['lumber_app_id'].'">
+                                        <p>Are you sure you want to mark this document as <strong>NO Certification New Registration</strong>?</p>
+                                        <p>This will update the Certification document status.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger" name="no_certification_doc" value="1">Confirm</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>';
+                }
 
-                
+                echo '
+                  </div>
+                </div>
+              </div>';
+
           }
-                // echo('<img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl='.$row['user_id'].'" class="img-fluid" alt="QR Not available"  width="50" height="50t"');
-    
- 
-                echo("</td></tr>\n");
-
-
-                // include 'modal_review.php';
 
                   ?>
-          
-
-
-
-
-
-
-
-
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+          </div>
+          </div>
                     </div>
                   </div>
                 </div>
@@ -562,11 +562,6 @@ echo "<script>window.location.href = 'application.php';</script>";
             ?>
 
             
-<!-- Modal Button -->
-<button type="button" class="btn btn-success" data-toggle="modal" data-target="#turnBackModal">
-    Comply
-</button>
-
 <!-- Modal -->
 <div class="modal fade" id="turnBackModal" tabindex="-1" role="dialog" aria-labelledby="turnBackModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
