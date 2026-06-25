@@ -642,6 +642,8 @@ echo '<script>
                 </div>
             </div>
 
+   </form>
+
             <!-- Confirm Forward Modal -->
             <div id="confirmModal" class="modal fade" role="dialog">
                 <div class="modal-dialog modal-md">
@@ -691,8 +693,6 @@ echo '<script>
                 });
             </script>
 
-
-   </form>
 
   </div>
 
