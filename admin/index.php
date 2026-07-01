@@ -31,11 +31,24 @@ include('../processphp/config.php');
 
 
 
-              $userid = $_SESSION["user_id"] ;
+              $userid = filter_var($_SESSION["user_id"] ?? null, FILTER_VALIDATE_INT);
 
-              $lumber_app = "SELECT * FROM denr_users where user_id = $userid";
-              $lumber_app_qry = mysqli_query($con, $lumber_app);
-              $lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
+              if ($userid === false || $userid === null) {
+                header('Location: prc_logout.php');
+                exit;
+              }
+
+              $lumber_app = "SELECT * FROM denr_users WHERE user_id = ? LIMIT 1";
+              $lumber_app_qry = mysqli_prepare($con, $lumber_app);
+              mysqli_stmt_bind_param($lumber_app_qry, 'i', $userid);
+              mysqli_stmt_execute($lumber_app_qry);
+              $lumber_app_result = mysqli_stmt_get_result($lumber_app_qry);
+              $lumber_ap_row = mysqli_fetch_assoc($lumber_app_result);
+
+              if (!$lumber_ap_row) {
+                header('Location: prc_logout.php');
+                exit;
+              }
 
 
                $clientname = $lumber_ap_row['name'] ;
@@ -45,6 +58,11 @@ include('../processphp/config.php');
 
                
                $user_role = $lumber_ap_row['user_role_id'] ;
+
+               if ($user_role != '99') {
+                 header('Location: prc_logout.php');
+                 exit;
+               }
 
 
 

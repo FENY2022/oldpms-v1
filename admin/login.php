@@ -26,15 +26,67 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is already logged in
-if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
-    header("location: index.php");
+function adminRedirectByRole($roleId) {
+    if ($roleId == '99') {
+        header("location: index.php");
+        exit;
+    }
+
+    if (in_array((string)$roleId, ['1', '2', '4', '7', '8', '9', '9.1', '10', '11', '12'], true)) {
+        header("location: ../main/production/application.php");
+        exit;
+    }
+
+    if (in_array((string)$roleId, ['12.5', '13', '14', '15', '16'], true)) {
+        header("location: ../main/action.php");
+        exit;
+    }
+
+    if ($roleId == '17') {
+        header("location: ../main/records/action.php");
+        exit;
+    }
+
+    if ($roleId == '19') {
+        header("location: ../main/tableic.php");
+        exit;
+    }
+
+    header("location: prc_logout.php");
     exit;
 }
 
-// Check if reCAPTCHA should be displayed (after 3 failed attempts)
-// FIX: Updated to match backend variable name
-$show_recaptcha = (isset($_SESSION['admin_login_attempts']) && $_SESSION['admin_login_attempts'] >= 3);
+// Check if user is already logged in
+if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+    adminRedirectByRole($_SESSION["user_role_id"] ?? '');
+}
+
+$math_operations = ['+', '-', '*'];
+$math_operation = $math_operations[array_rand($math_operations)];
+$math_left = rand(1, 9);
+$math_right = rand(1, 9);
+
+if ($math_operation === '-') {
+    $math_left = rand(5, 15);
+    $math_right = rand(1, $math_left);
+}
+
+if ($math_operation === '*') {
+    $math_left = rand(1, 5);
+    $math_right = rand(1, 5);
+}
+
+switch ($math_operation) {
+    case '-':
+        $_SESSION['admin_math_answer'] = $math_left - $math_right;
+        break;
+    case '*':
+        $_SESSION['admin_math_answer'] = $math_left * $math_right;
+        break;
+    default:
+        $_SESSION['admin_math_answer'] = $math_left + $math_right;
+        break;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -136,9 +188,12 @@ $show_recaptcha = (isset($_SESSION['admin_login_attempts']) && $_SESSION['admin_
                 <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
             </div>
 
-            <?php if ($show_recaptcha): ?>
-                <div class="g-recaptcha mt-3" data-sitekey="6LeTIY0sAAAAAJDzQT7Atu4lR7NsfUH07D8vNPxc"></div>
-            <?php endif; ?>
+            <div class="form-group">
+                <i class="fas fa-calculator"></i>
+                <input type="number" class="form-control" id="math_answer" name="math_answer" required placeholder="Solve: <?php echo $math_left . ' ' . $math_operation . ' ' . $math_right; ?> = ?">
+            </div>
+
+            <div class="g-recaptcha mt-3" data-sitekey="6LeTIY0sAAAAAJDzQT7Atu4lR7NsfUH07D8vNPxc"></div>
 
             <div class="options">
                 <div class="remember-me">
@@ -153,7 +208,7 @@ $show_recaptcha = (isset($_SESSION['admin_login_attempts']) && $_SESSION['admin_
             </button>
             
             <div class="action-buttons">
-                <button type="button" class="action-btn btn-register" onclick="window.location.href='Register2.php'">
+                <button type="button" class="action-btn btn-register" onclick="window.location.href='../register2.php'">
                     <i class="fas fa-user-plus"></i> Register
                 </button>
             </div>
