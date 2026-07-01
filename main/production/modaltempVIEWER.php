@@ -208,7 +208,7 @@ $lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
     <form method="POST" action="modaltempVIEWER_POST.php"> 
       <input type="text" class="form-control" required="required" placeholder="lumber_app_id" name="lumber_app_id" id="lumber_app_id" value="<?php echo $l_id;?>" hidden>   
             <input <?php $Approved = 'Approved (FG)'; 
-            if (($lumber_ap_row['doc_status']) == ($Approved))  { 
+            if ($lumber_ap_row && ($lumber_ap_row['doc_status'] ?? '') == ($Approved))  { 
 
             echo 'type="hidden"' ; 
             }
@@ -261,7 +261,7 @@ echo '
     <form method="POST" action="modaltempVIEWER_POST.php"> 
           <input type="text" class="form-control" required="required" placeholder="lumber_app_id" name="lumber_app_id" id="lumber_app_id" value="<?php echo $l_id;?>" hidden>   
                 <input <?php $Approved = 'Approved (FG)'; 
-                if (($lumber_ap_row['doc_status']) == ($Approved))  { 
+                if ($lumber_ap_row && ($lumber_ap_row['doc_status'] ?? '') == ($Approved))  { 
 
                 echo 'type="hidden"' ; 
                 }

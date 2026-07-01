@@ -274,6 +274,88 @@ if (isset($_POST['no_certification_doc'])) {
     </script>";
 }
 
+if (isset($_POST['upload_doc7'])) {
+    $lumber_app_id = $_POST['lumber_app_id'];
+
+    $img_name = $_FILES['doc7_file']['name'];
+    $img_size = $_FILES['doc7_file']['size'];
+    $tmp_name = $_FILES['doc7_file']['tmp_name'];
+    $error = $_FILES['doc7_file']['error'];
+
+    if ($error === 0) {
+        if ($img_size > 10 * 1024 * 1024) {
+            $em = "Sorry, Document number 7 file is too large.";
+            echo "<script>alert('$em'); window.location.href='reuturnUPDATE.php?lumber_app_id=$lumber_app_id';</script>";
+        } else {
+            $img_ex = pathinfo($img_name, PATHINFO_EXTENSION);
+            $img_ex_lc = strtolower($img_ex);
+            $allowed_exs = array("jpg", "jpeg", "png", "pdf");
+
+            if (in_array($img_ex_lc, $allowed_exs)) {
+                $new_img_name = uniqid("PDF-", true).'.'.$img_ex_lc;
+                $img_upload_path = '../../processphp/clientupload/uploads/'.$new_img_name;
+                move_uploaded_file($tmp_name, $img_upload_path);
+
+                $For_Review = 'For Review';
+                $date = date("m/d/y");
+                $doc_app_ind = '0';
+                $doc_type_name = 'Lumber Dealer Photo';
+                $Number_of_doc = '7';
+                $uniqid_lap = uniqid();
+
+                $check = $connection->prepare("SELECT * FROM lumber_app_doc_erow WHERE lumber_app_id = :lumber_app_id AND Number_of_doc = :Number_of_doc");
+                $check->execute(array(
+                    ':lumber_app_id' => $lumber_app_id,
+                    ':Number_of_doc' => $Number_of_doc
+                ));
+
+                if ($check->rowCount() > 0) {
+                    $sql = "UPDATE lumber_app_doc_erow SET
+                            name_app_doc = :name_app_doc,
+                            doc_type_name = :doc_type_name,
+                            date_applied = :date_applied,
+                            doc_status = :doc_status,
+                            doc_app_ind = :doc_app_ind
+                            WHERE lumber_app_id = :lumber_app_id AND Number_of_doc = :Number_of_doc";
+                    $stmt = $connection->prepare($sql);
+                    $stmt->execute(array(
+                        ':name_app_doc' => $new_img_name,
+                        ':doc_type_name' => $doc_type_name,
+                        ':date_applied' => $date,
+                        ':doc_status' => $For_Review,
+                        ':doc_app_ind' => $doc_app_ind,
+                        ':lumber_app_id' => $lumber_app_id,
+                        ':Number_of_doc' => $Number_of_doc
+                    ));
+                } else {
+                    $query = $connection->prepare("INSERT INTO lumber_app_doc_erow(
+                        lumber_app_id, name_app_doc, doc_type_name, date_applied, doc_status, doc_app_ind, Number_of_doc, uniqid_lapp
+                    ) VALUES (
+                        :lumber_app_id, :name_app_doc, :doc_type_name, :date_applied, :doc_status, :doc_app_ind, :Number_of_doc, :uniqid_lapp
+                    )");
+                    $query->bindParam("lumber_app_id", $lumber_app_id, PDO::PARAM_STR);
+                    $query->bindParam("name_app_doc", $new_img_name, PDO::PARAM_STR);
+                    $query->bindParam("doc_type_name", $doc_type_name, PDO::PARAM_STR);
+                    $query->bindParam("date_applied", $date, PDO::PARAM_STR);
+                    $query->bindParam("doc_status", $For_Review, PDO::PARAM_STR);
+                    $query->bindParam("doc_app_ind", $doc_app_ind, PDO::PARAM_STR);
+                    $query->bindParam("Number_of_doc", $Number_of_doc, PDO::PARAM_STR);
+                    $query->bindParam("uniqid_lapp", $uniqid_lap, PDO::PARAM_STR);
+                    $query->execute();
+                }
+
+                echo "<script>
+                    alert('Document No. 7 uploaded successfully');
+                    window.location.href = 'reuturnUPDATE.php?lumber_app_id=$lumber_app_id';
+                </script>";
+            } else {
+                $em = "You can't upload files of this type on document number 7";
+                echo "<script>alert('$em'); window.location.href='reuturnUPDATE.php?lumber_app_id=$lumber_app_id';</script>";
+            }
+        }
+    }
+}
+
 ?>
 
 
@@ -521,6 +603,38 @@ if (isset($_POST['no_certification_doc'])) {
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                         <button type="submit" class="btn btn-danger" name="no_certification_doc" value="1">Confirm</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>';
+                }
+
+                // Add "Upload" button for document number 7
+                if ($row['Number_of_doc'] == '7') {
+                    echo '<button type="button" class="btn btn-primary btn-sm ml-1" data-toggle="modal" data-target="#uploadDoc7Modal'.$row['lumber_app_id'].'">Upload</button>';
+                    echo '
+                    <div class="modal fade" id="uploadDoc7Modal'.$row['lumber_app_id'].'" tabindex="-1" role="dialog" aria-labelledby="uploadDoc7ModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="uploadDoc7ModalLabel">Upload Document No. 7 - Lumber Dealer Photo</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="POST" enctype="multipart/form-data">
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lumber_app_id" value="'.$row['lumber_app_id'].'">
+                                        <div class="form-group">
+                                            <label for="doc7_file">Select file (JPG, JPEG, PNG, or PDF)</label>
+                                            <input type="file" class="form-control-file" id="doc7_file" name="doc7_file" accept=".jpg,.jpeg,.png,.pdf" required>
+                                        </div>
+                                        <p class="text-muted small">Max file size: 10MB</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary" name="upload_doc7" value="1">Upload</button>
                                     </div>
                                 </form>
                             </div>
