@@ -11,8 +11,29 @@ use Dompdf\Options;
 $date =  date("m/d/Y") ; 
 
 // $lumber_app_id = '334';   
-$dayWithSuffix;
-$lumber_app_id = $_GET["lumber_app_id"];
+$lumber_app_id = filter_input(INPUT_GET, "lumber_app_id", FILTER_VALIDATE_INT);
+
+if (!$lumber_app_id) {
+    http_response_code(400);
+    exit("Invalid lumber application ID.");
+}
+
+function addDaySuffix($day) {
+    if ($day >= 11 && $day <= 13) {
+        return $day . 'th';
+    }
+
+    switch ($day % 10) {
+        case 1:
+            return $day . 'st';
+        case 2:
+            return $day . 'nd';
+        case 3:
+            return $day . 'rd';
+        default:
+            return $day . 'th';
+    }
+}
 
 $lumber_app = "SELECT * FROM cf_documents where lumber_app_id = $lumber_app_id ";
 $lumber_app_qry = mysqli_query($con, $lumber_app);
@@ -27,44 +48,6 @@ $office_under = $lumber_ap_row['office_under'];
 $ldname = $lumber_ap_row['ldname'];
 $date = $lumber_ap_row['date'];
 
-
-
-
-
-// Function to add suffix to the day
-function addDaySuffix($day) {
-    if ($day >= 11 && $day <= 13) {
-        return $day . 'th';
-    } else {
-        switch ($day % 10) {
-            case 1:
-                return $day . 'st';
-            case 2:
-                return $day . 'nd';
-            case 3:
-                return $day . 'rd';
-            default:
-                return $day . 'th';
-        }
-    }
-}
-
-// Assuming $date contains the date in the format 'Y-m-d' (e.g., '2023-11-30')
-$date = $lumber_ap_row['date'];
-
-// Extract day from the date
-$day = date('j', strtotime($date));
-
-// Add suffix to the day
-// $dayWithSuffix = addDaySuffix($day) . date('M, Y');
-// $dayWithSuffix = (string) addDaySuffix($day) . "  Day of  " . date('M, Y');
-$dayWithSuffix = (string) addDaySuffix($day) . " Day of " . date('F, Y');
-
-
-
-
-
-
 } else {
 
 
@@ -75,15 +58,27 @@ $dayWithSuffix = (string) addDaySuffix($day) . " Day of " . date('F, Y');
     $lumber_app_qry = mysqli_query($con, $lumber_app);
     $lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
 
+    if (!$lumber_ap_row) {
+        http_response_code(404);
+        exit("Lumber application not found.");
+    }
+
     $office_dir = $lumber_ap_row['Office'];
 
-    $province_suffix = $lumber_ap_row['Suffix'];
+    $province_suffix = trim((string) $lumber_ap_row['Suffix']);
+
+    $prov_code = (int) $lumber_ap_row['prov_code'];
 
     $bussiness_name = $lumber_ap_row['bussiness_name'];
 
     $lumber_app = "SELECT * FROM Office where station = '$office_dir'";
     $lumber_app_qry = mysqli_query($con, $lumber_app);
     $lumber_ap_row1 = mysqli_fetch_assoc($lumber_app_qry);
+
+    if (!$lumber_ap_row1) {
+        http_response_code(404);
+        exit("Office record not found.");
+    }
 
     $office_penroaddress = $lumber_ap_row1['office_under'];
 
@@ -92,14 +87,32 @@ $dayWithSuffix = (string) addDaySuffix($day) . " Day of " . date('F, Y');
     $lumber_app_qry = mysqli_query($con, $lumber_app);
     $lumber_ap_row1 = mysqli_fetch_assoc($lumber_app_qry);
 
+    if (!$lumber_ap_row1) {
+        http_response_code(404);
+        exit("PENRO office record not found.");
+    }
 
 
     $office_address = $lumber_ap_row1['office_address'];
 
-    $lumber_app = "SELECT * FROM province where Suffix = '$province_suffix'";
-    $lumber_app_qry = mysqli_query($con, $lumber_app);
-    $lumber_ap_row2 = mysqli_fetch_assoc($lumber_app_qry);
-    echo '<br>';
+    $lumber_ap_row2 = null;
+
+    if ($prov_code > 0) {
+        $lumber_app = "SELECT * FROM province where prov_code = $prov_code";
+        $lumber_app_qry = mysqli_query($con, $lumber_app);
+        $lumber_ap_row2 = mysqli_fetch_assoc($lumber_app_qry);
+    }
+
+    if (!$lumber_ap_row2 && $province_suffix !== '') {
+        $lumber_app = "SELECT * FROM province where Suffix = '$province_suffix'";
+        $lumber_app_qry = mysqli_query($con, $lumber_app);
+        $lumber_ap_row2 = mysqli_fetch_assoc($lumber_app_qry);
+    }
+
+    if (!$lumber_ap_row2) {
+        http_response_code(404);
+        exit("Province record not found.");
+    }
 
     $prov_name = $lumber_ap_row2['prov_name'];
 
@@ -112,7 +125,39 @@ $dayWithSuffix = (string) addDaySuffix($day) . " Day of " . date('F, Y');
         $date = date('F d, Y');
 
 }
-       
+
+$day = date('j', strtotime($date));
+$dayWithSuffix = (string) addDaySuffix($day) . " Day of " . date('F, Y', strtotime($date));
+
+$lumber_app = "SELECT * FROM cf_documents where lumber_app_id = $lumber_app_id ";
+$lumber_app_qry = mysqli_query($con, $lumber_app);
+$lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
+
+if (!$lumber_ap_row) {
+    $query = $connection->prepare("INSERT INTO cf_documents(
+        lumber_app_id,
+        province,
+        penro_address,
+        office_under,
+        ldname,
+        date
+    ) VALUES (
+        :lumber_app_id,
+        :province,
+        :penro_address,
+        :office_under,
+        :ldname,
+        :date
+    )");
+
+    $query->bindParam("lumber_app_id", $lumber_app_id, PDO::PARAM_STR);
+    $query->bindParam("province", $province, PDO::PARAM_STR);
+    $query->bindParam("penro_address", $penro_address, PDO::PARAM_STR);
+    $query->bindParam("office_under", $office_under, PDO::PARAM_STR);
+    $query->bindParam("ldname", $ldname, PDO::PARAM_STR);
+    $query->bindParam("date", $date, PDO::PARAM_STR);
+    $result = $query->execute();
+}
 
 
 
@@ -156,58 +201,5 @@ $dompdf->stream("copyfurnish.pdf", array("Attachment" => false));
  */
 $output = $dompdf->output();
 file_put_contents("acknowledgement.pdf", $output);
-
-
-
-
-
-
-            $lumber_app = "SELECT * FROM cf_documents where lumber_app_id = $lumber_app_id ";
-            $lumber_app_qry = mysqli_query($con, $lumber_app);
-            $lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
-
-            if ($lumber_ap_row) {
-            
-            }else{
-
-
-            $query = $connection->prepare("INSERT INTO cf_documents(
-                            
-                lumber_app_id, 
-                province,
-                penro_address,
-                office_under,
-                ldname,
-                date
-
-                )
-            VALUES (
-
-                :lumber_app_id,
-                :province,
-                :penro_address,
-                :office_under,
-                :ldname,
-                :date
-
-                )");
-
-            $query->bindParam("lumber_app_id", $lumber_app_id, PDO::PARAM_STR);
-            $query->bindParam("province", $province, PDO::PARAM_STR);
-            $query->bindParam("penro_address", $penro_address, PDO::PARAM_STR);
-            $query->bindParam("office_under", $office_under, PDO::PARAM_STR);
-            $query->bindParam("ldname", $ldname, PDO::PARAM_STR);
-            $query->bindParam("date", $date, PDO::PARAM_STR);
-            $result = $query->execute();
-
-
-
-
-
-            }
-
-  
-        
-
 
 ?>

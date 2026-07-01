@@ -137,7 +137,7 @@ $dtp1 = ($datemonth .' '. date('d') .', '. date('Y')) ;
 								</div>
 								<div class="x_content">
 									<br />
-									<form class="form-label-left input_mask" method="post" action="generate-pdf2.php" formtarget="_blank" target="_blank">
+									<form id="acknowledgementForm" class="form-label-left input_mask" method="post" action="generate-pdf2.php">
 
 									
 											<div class="item form-group row">
@@ -198,7 +198,7 @@ $dtp1 = ($datemonth .' '. date('d') .', '. date('Y')) ;
 
 											<?php
 
-												echo '<button type="submit" class="btn btn-success">Prepare Acknowledgement</button>';
+												echo '<button type="button" id="prepareAcknowledgementBtn" class="btn btn-success" data-toggle="modal" data-target="#acknowledgementModal">Prepare Acknowledgement</button>';
 											?>
 
 											</div>
@@ -207,13 +207,13 @@ $dtp1 = ($datemonth .' '. date('d') .', '. date('Y')) ;
                                             	</form>
 											<div class="form-section" id="section2" style="display:none;">
 												<?php	
-												echo '<a  target="_blank" href="generate-pdf_CF.php?lumber_app_id='.$id.'" type="button" name="submit_1" class="btn btn-success">Prepare Memorandum CF</a>';
+												echo '<button type="button" id="prepareCfBtn" data-src="generate-pdf_CF.php?lumber_app_id='.$id.'" name="submit_1" class="btn btn-success" data-toggle="modal" data-target="#cfModal">Prepare Memorandum CF</button>';
 												echo '</div>';	
 												
 												?>
 										 <div class="form-section" id="section3" style="display:none;">
 												<?php
-												echo '<a id="receiveButton" href="../prc_receive.php?lumber_app_id=' . $id . '" type="button" name="submit_1" class="btn btn-success">Receive</a>';
+												echo '<button id="receiveButton" type="button" name="submit_1" class="btn btn-success" data-toggle="modal" data-target="#receiveConfirmModal">Receive</button>';
 												?>
 										</div>
 
@@ -250,6 +250,58 @@ $dtp1 = ($datemonth .' '. date('d') .', '. date('Y')) ;
         <!-- /footer content -->
       </div>
     </div>
+
+	<div class="modal fade" id="acknowledgementModal" tabindex="-1" role="dialog" aria-labelledby="acknowledgementModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="acknowledgementModalLabel">Prepare Acknowledgement</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body p-0">
+					<iframe id="acknowledgementFrame" name="acknowledgementFrame" style="width: 100%; height: 85vh; border: none;"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="cfModal" tabindex="-1" role="dialog" aria-labelledby="cfModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="cfModalLabel">Prepare Memorandum CF</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body p-0">
+					<iframe id="cfFrame" style="width: 100%; height: 85vh; border: none;"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="receiveConfirmModal" tabindex="-1" role="dialog" aria-labelledby="receiveConfirmModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="receiveConfirmModalLabel">Confirm Receive</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Are you sure you want to mark this application as received?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					<a href="../prc_receive.php?lumber_app_id=<?php echo $id; ?>" class="btn btn-success">Yes, Receive</a>
+				</div>
+			</div>
+		</div>
+	</div>
 
     <!-- jQuery -->
     <script src="../vendors/jquery/dist/jquery.min.js"></script>
@@ -293,6 +345,37 @@ $dtp1 = ($datemonth .' '. date('d') .', '. date('Y')) ;
 			}, 60000);
 		}
 	</script>
+
+	<script>
+		$(document).ready(function() {
+			$('#prepareAcknowledgementBtn').on('click', function() {
+				var form = document.getElementById('acknowledgementForm');
+				var frame = document.getElementById('acknowledgementFrame');
+
+				if (!form.checkValidity()) {
+					form.reportValidity();
+					return;
+				}
+
+				frame.src = 'about:blank';
+				form.target = 'acknowledgementFrame';
+				form.submit();
+			});
+
+			$('#prepareCfBtn').on('click', function() {
+				var frame = document.getElementById('cfFrame');
+				frame.src = $(this).data('src');
+			});
+
+			$('#acknowledgementModal').on('hidden.bs.modal', function() {
+				document.getElementById('acknowledgementFrame').src = 'about:blank';
+			});
+
+			$('#cfModal').on('hidden.bs.modal', function() {
+				document.getElementById('cfFrame').src = 'about:blank';
+			});
+		});
+	</script>
   </body>
 </html>
 
@@ -313,12 +396,14 @@ $dtp1 = ($datemonth .' '. date('d') .', '. date('Y')) ;
                 document.getElementById('prevBtn').style.display = 'inline-block';
             }
 
+            const submitBtn = document.getElementById('submitBtn');
+
             if (sectionNumber === 3) {
                 document.getElementById('nextBtn').style.display = 'none';
-                document.getElementById('submitBtn').style.display = 'inline-block';
+                if (submitBtn) submitBtn.style.display = 'inline-block';
             } else {
                 document.getElementById('nextBtn').style.display = 'inline-block';
-                document.getElementById('submitBtn').style.display = 'none';
+                if (submitBtn) submitBtn.style.display = 'none';
             }
         }
 
