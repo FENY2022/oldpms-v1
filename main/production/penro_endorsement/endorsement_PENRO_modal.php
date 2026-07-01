@@ -9,32 +9,17 @@ use Dompdf\Options;
 
 require_once "../../../processphp/config.php";
 
-$lumber_app_id = $_GET['lumber_app_id'];
+$lumber_app_id = intval($_GET['lumber_app_id']);
 
 $formattedDate = date('F j, Y');
 
 $Status_ = 'ENDORSEMENT';
-$stmt = $con->prepare("UPDATE c_endorsement SET date_penro = ? WHERE lumber_app_id = ?");
-$stmt->bind_param("si", $formattedDate, $lumber_app_id);
-
-
-if ($stmt->execute()) {
-    echo "Record updated successfully. Affected rows: " . $stmt->affected_rows;
-} else {
-    echo "Error updating record: " . $stmt->error;
-}
-
-
-
-$lumber_app = "SELECT * FROM c_endorsement where lumber_app_id = $lumber_app_id ";
-$lumber_app_qry = mysqli_query($con, $lumber_app);
-$lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
 
 $lumber_app1 = "SELECT * FROM payment_feny where lumber_app_id = $lumber_app_id ";
 $lumber_app_qry1 = mysqli_query($con, $lumber_app1);
 $lumber_ap_row1 = mysqli_fetch_assoc($lumber_app_qry1);
-$refnumber  = $lumber_ap_row1['Reference_Number'];
-$datepaid = date('F d, Y') == ($lumber_ap_row1['Date_payment']);
+$refnumber  = $lumber_ap_row1['Reference_Number'] ?? '';
+$datepaid = $lumber_ap_row1['Date_payment'] ?? '';
 
 $lumber_app = "SELECT * FROM lumber_application where lumber_app_id = $lumber_app_id ";
 $lumber_app_qry = mysqli_query($con, $lumber_app);
@@ -59,8 +44,113 @@ $lumber_app = "SELECT * FROM order_of_payment where lumber_app_id = $lumber_app_
 $lumber_app_qry = mysqli_query($con, $lumber_app);
 $result_orderofpayment = mysqli_fetch_assoc($lumber_app_qry);
 
-$cashbond = $result_orderofpayment['cash'];
-$Amount_Decimal = $result_orderofpayment['Amount_Decimal'];
+$cashbond = $result_orderofpayment['cash'] ?? '';
+$Amount_Decimal = $result_orderofpayment['Amount_Decimal'] ?? '';
+
+$lumber_app = "SELECT * FROM c_endorsement where lumber_app_id = $lumber_app_id ";
+$lumber_app_qry = mysqli_query($con, $lumber_app);
+$lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
+
+if (!$lumber_ap_row) {
+    $full_name_insert = trim(($result['perm_fname'] ?? '') . ' ' . ($result['perm_lname'] ?? ''));
+    $bussiness_name_insert = $result['bussiness_name'] ?? '';
+    $full_address_insert = $result['full_address'] ?? '';
+    $office_under_insert = $result['office_under'] ?? '';
+    $office_address_insert = '';
+    $penroaddress_insert = '';
+    $municipal_qry_result_insert = $result['Office'] ?? '';
+    $datevalidation_insert = $formattedDate;
+
+    $mun_code = $result['muncity_code'] ?? '';
+    if ($mun_code !== '') {
+        $municipal_query = mysqli_query($con, "SELECT * FROM muncity where mun_code = $mun_code");
+        $municipal_row = mysqli_fetch_assoc($municipal_query);
+        if ($municipal_row) {
+            $municipal_qry_result_insert = $municipal_row['muncity_name'] ?? $municipal_qry_result_insert;
+            $office_id = $municipal_row['office_id'] ?? '';
+            if ($office_id !== '') {
+                $penro_office_query = mysqli_query($con, "SELECT * FROM office where office_id = $office_id");
+                $penro_office_row = mysqli_fetch_assoc($penro_office_query);
+                $office_under_insert = $penro_office_row['office_under'] ?? $office_under_insert;
+
+                if ($office_under_insert !== '') {
+                    $penro_address_query = mysqli_query($con, "SELECT * FROM office where station = '$office_under_insert'");
+                    $penro_address_row = mysqli_fetch_assoc($penro_address_query);
+                    $penroaddress_insert = $penro_address_row['office_address'] ?? '';
+                }
+            }
+        }
+    }
+
+    $station = $result['Office'] ?? '';
+    if ($station !== '') {
+        $office_query = mysqli_query($con, "SELECT * FROM office where station = '$station'");
+        $office_row = mysqli_fetch_assoc($office_query);
+        $office_address_insert = $office_row['office_address'] ?? '';
+    }
+
+    $date_doc_query = mysqli_query($con, "SELECT date_approved FROM lumber_app_doc_erow where lumber_app_id = $lumber_app_id && Number_of_doc = '8'");
+    $date_doc_row = mysqli_fetch_assoc($date_doc_query);
+    if (!empty($date_doc_row['date_approved'])) {
+        $datevalidation_insert = date('F d, Y', strtotime($date_doc_row['date_approved']));
+    }
+
+    $query = $connection->prepare("INSERT INTO c_endorsement(
+        lumber_app_id, office_address, office_under, penroaddress, bussiness_name, date_, date_penro,
+        full_address, ldname, full_name, ldaddress, MPdateissued, MPdateexpiry, BNNumber,
+        DTIdateissued, DTIdateexpiry, municipal_qry_result, datevalidation, refnumber, datepaid,
+        owner, totalsupply, particulars
+    ) VALUES (
+        :lumber_app_id, :office_address, :office_under, :penroaddress, :bussiness_name, :date_, :date_penro,
+        :full_address, :ldname, :full_name, :ldaddress, :MPdateissued, :MPdateexpiry, :BNNumber,
+        :DTIdateissued, :DTIdateexpiry, :municipal_qry_result, :datevalidation, :refnumber, :datepaid,
+        :owner, :totalsupply, :particulars
+    )");
+    $empty = '';
+    $particulars_insert = 'Chainsaw-cut Lumbers';
+    $query->execute(array(
+        ':lumber_app_id' => $lumber_app_id,
+        ':office_address' => $office_address_insert,
+        ':office_under' => $office_under_insert,
+        ':penroaddress' => $penroaddress_insert,
+        ':bussiness_name' => $bussiness_name_insert,
+        ':date_' => $formattedDate,
+        ':date_penro' => $formattedDate,
+        ':full_address' => $full_address_insert,
+        ':ldname' => $full_name_insert,
+        ':full_name' => $full_name_insert,
+        ':ldaddress' => $full_address_insert,
+        ':MPdateissued' => $empty,
+        ':MPdateexpiry' => $empty,
+        ':BNNumber' => $empty,
+        ':DTIdateissued' => $empty,
+        ':DTIdateexpiry' => $empty,
+        ':municipal_qry_result' => $municipal_qry_result_insert,
+        ':datevalidation' => $datevalidation_insert,
+        ':refnumber' => $refnumber,
+        ':datepaid' => $datepaid,
+        ':owner' => $full_name_insert,
+        ':totalsupply' => $empty,
+        ':particulars' => $particulars_insert,
+    ));
+} else {
+    $stmt = $con->prepare("UPDATE c_endorsement SET date_penro = ? WHERE lumber_app_id = ?");
+    $stmt->bind_param("si", $formattedDate, $lumber_app_id);
+
+    if (!$stmt->execute()) {
+        echo "Error updating record: " . $stmt->error;
+        exit;
+    }
+}
+
+$lumber_app = "SELECT * FROM c_endorsement where lumber_app_id = $lumber_app_id ";
+$lumber_app_qry = mysqli_query($con, $lumber_app);
+$lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
+
+if (!$lumber_ap_row) {
+    echo "Error creating endorsement record for lumber_app_id: " . $lumber_app_id;
+    exit;
+}
 
 
 // Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature Signature 
@@ -301,7 +391,7 @@ $lumber_app = "SELECT * FROM c_endorsement where lumber_app_id = $lumber_app_id 
 $lumber_app_qry = mysqli_query($con, $lumber_app);
 $lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
 
-if (($lumber_ap_row['lumber_app_id']) == ($lumber_app_id)) {
+if ($lumber_ap_row) {
    
 
 
@@ -389,7 +479,7 @@ $lumber_app = "SELECT * FROM lumber_app_doc_erow where lumber_app_id = $lumber_a
 $lumber_app_qry = mysqli_query($con, $lumber_app);
 $lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
 
-if (($lumber_ap_row['Number_of_doc']) == ('10')) {
+if ($lumber_ap_row && ($lumber_ap_row['Number_of_doc']) == ('10')) {
    
 
 
@@ -455,7 +545,7 @@ $lumber_app_qry = mysqli_query($con, $lumber_app);
 $lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
 
 
-if (!$lumber_ap_row['lumber_app_id']){
+if (!$lumber_ap_row){
 
             date_default_timezone_set("Asia/Manila");
 
