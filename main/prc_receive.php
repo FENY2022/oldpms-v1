@@ -12,7 +12,15 @@ session_start();
 
 
 
-$nshow = $_GET['lumber_app_id'];
+$nshow = filter_input(INPUT_GET, 'lumber_app_id', FILTER_VALIDATE_INT);
+
+if (!$nshow) {
+    echo "<script>
+        alert('Invalid application ID');
+        window.history.back();
+    </script>";
+    exit();
+}
 
 
 
@@ -20,17 +28,20 @@ $nshow = $_GET['lumber_app_id'];
 require_once "../processphp/config.php";
 
 
-$lumber_app_id = $_GET['lumber_app_id']; // Assuming this is passed via URL
+$lumber_app_id = $nshow;
 
-// Query to check if a record exists in cf_documents
-$check_query = "SELECT * FROM cf_documents WHERE lumber_app_id = $lumber_app_id";
-$result = mysqli_query($con, $check_query);
+$check_query = $connection->prepare("SELECT 1 FROM certification_client WHERE lumber_app_id = :lumber_app_id LIMIT 1");
+$check_query->execute(array(':lumber_app_id' => $lumber_app_id));
+$has_certification = $check_query->fetchColumn();
 
-if (mysqli_num_rows($result) == 0) {
-    // If no record found, alert and exit
+$check_query = $connection->prepare("SELECT 1 FROM cf_documents WHERE lumber_app_id = :lumber_app_id LIMIT 1");
+$check_query->execute(array(':lumber_app_id' => $lumber_app_id));
+$has_cf_document = $check_query->fetchColumn();
+
+if (!$has_certification && !$has_cf_document) {
     echo "<script>
-        alert('Erorr: Please prepare certification');
-        window.history.back(); // Optionally go back to the previous page
+        alert('Error: Please prepare certification');
+        window.history.back();
     </script>";
     exit();
 }
