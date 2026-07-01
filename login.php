@@ -1,3 +1,35 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+$math_operations = ['+', '-', '*'];
+$math_operation = $math_operations[array_rand($math_operations)];
+$math_left = rand(1, 9);
+$math_right = rand(1, 9);
+
+if ($math_operation === '-') {
+    $math_left = rand(5, 15);
+    $math_right = rand(1, $math_left);
+}
+
+if ($math_operation === '*') {
+    $math_left = rand(1, 5);
+    $math_right = rand(1, 5);
+}
+
+switch ($math_operation) {
+    case '-':
+        $_SESSION['client_math_answer'] = $math_left - $math_right;
+        break;
+    case '*':
+        $_SESSION['client_math_answer'] = $math_left * $math_right;
+        break;
+    default:
+        $_SESSION['client_math_answer'] = $math_left + $math_right;
+        break;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -344,6 +376,11 @@
         .btn-close-white {
             filter: brightness(0) invert(1); 
         }
+        .g-recaptcha {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
@@ -372,6 +409,11 @@
                 <i class="fas fa-lock"></i>
                 <input type="password" class="form-control" id="Password" name="password" required placeholder="Enter your password">
             </div>
+            <div class="form-group">
+                <i class="fas fa-calculator"></i>
+                <input type="number" class="form-control" id="math_answer" name="math_answer" required placeholder="Solve: <?php echo $math_left . ' ' . $math_operation . ' ' . $math_right; ?> = ?">
+            </div>
+            <div class="g-recaptcha mt-3" data-sitekey="6LeTIY0sAAAAAJDzQT7Atu4lR7NsfUH07D8vNPxc"></div>
             <div class="options">
                 <div class="remember-me">
                     <input type="checkbox" id="RememberMe" name="RememberMe" value="true">
@@ -380,11 +422,11 @@
                 </div>
                 <a href="forgot_password.php" class="forgot-password">Forgot password?</a>
             </div>
-            <button type="submit" class="btn-login g-recaptcha" data-sitekey="6LeTIY0sAAAAAJDzQT7Atu4lR7NsfUH07D8vNPxc" data-callback="onLoginSubmit" name="btn">
+            <button type="submit" class="btn-login" name="btn">
                 <i class="fas fa-sign-in-alt"></i> LOG IN
             </button>
             <div class="action-buttons">
-                <button type="button" class="action-btn btn-register" onclick="window.location.href='Register2.php'">
+                <button type="button" class="action-btn btn-register" onclick="window.location.href='register2.php'">
                     <i class="fas fa-user-plus"></i> Register
                 </button>
             </div>
