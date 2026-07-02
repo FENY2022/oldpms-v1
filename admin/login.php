@@ -61,32 +61,6 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     adminRedirectByRole($_SESSION["user_role_id"] ?? '');
 }
 
-$math_operations = ['+', '-', '*'];
-$math_operation = $math_operations[array_rand($math_operations)];
-$math_left = rand(1, 9);
-$math_right = rand(1, 9);
-
-if ($math_operation === '-') {
-    $math_left = rand(5, 15);
-    $math_right = rand(1, $math_left);
-}
-
-if ($math_operation === '*') {
-    $math_left = rand(1, 5);
-    $math_right = rand(1, 5);
-}
-
-switch ($math_operation) {
-    case '-':
-        $_SESSION['admin_math_answer'] = $math_left - $math_right;
-        break;
-    case '*':
-        $_SESSION['admin_math_answer'] = $math_left * $math_right;
-        break;
-    default:
-        $_SESSION['admin_math_answer'] = $math_left + $math_right;
-        break;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -186,11 +160,6 @@ switch ($math_operation) {
             <div class="form-group">
                 <i class="fas fa-lock"></i>
                 <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
-            </div>
-
-            <div class="form-group">
-                <i class="fas fa-calculator"></i>
-                <input type="number" class="form-control" id="math_answer" name="math_answer" required placeholder="Solve: <?php echo $math_left . ' ' . $math_operation . ' ' . $math_right; ?> = ?">
             </div>
 
             <div class="g-recaptcha mt-3" data-sitekey="6LeTIY0sAAAAAJDzQT7Atu4lR7NsfUH07D8vNPxc"></div>

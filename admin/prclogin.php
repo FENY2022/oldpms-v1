@@ -80,12 +80,6 @@
             registerFailedLogin('reCAPTCHA validation failed. Please check the box.');
         }
 
-        $math_answer = filter_input(INPUT_POST, 'math_answer', FILTER_VALIDATE_INT);
-        if (!isset($_SESSION['admin_math_answer']) || $math_answer === false || $math_answer !== (int)$_SESSION['admin_math_answer']) {
-            registerFailedLogin('Math answer is incorrect. Please try again.');
-        }
-        unset($_SESSION['admin_math_answer']);
-
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'];
 
