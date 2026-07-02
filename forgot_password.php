@@ -93,18 +93,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action_send_code'])) {
             try {
                 //Server settings
                 $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com';
+                $mail->Host = SMTP_HOST;
                 $mail->SMTPAuth = true;
-                $mail->Username = 'otosamsosdenrcaraga@gmail.com'; 
-                
-                // IMPORTANT: Generate a NEW App Password from Google and paste it here!
-                $mail->Password = 'qrkm kzyb qjkk lvjf'; 
-                
+                $mail->Username = SMTP_USERNAME;
+                $mail->Password = SMTP_PASSWORD;
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = 587;
+                $mail->Port = SMTP_PORT;
 
                 //Recipients
-                $mail->setFrom('otosamsosdenrcaraga@gmail.com', 'O-LDPMS PASSWORD'); 
+                $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
                 $mail->addAddress($email); 
 
                 //Content
