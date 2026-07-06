@@ -2,13 +2,17 @@
 
 
 // require_once('configmysqli.php');
+$is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ((int)($_SERVER['SERVER_PORT'] ?? 80) === 443);
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', $is_https ? '1' : '0');
+ini_set('session.cookie_samesite', 'Lax');
+
 session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => $_SERVER['HTTP_HOST'], 
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'Strict'
+  'lifetime' => 0,
+  'path' => '/',
+  'secure' => $is_https,
+  'httponly' => true,
+  'samesite' => 'Lax'
 ]);
 
 session_start();

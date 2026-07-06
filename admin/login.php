@@ -8,22 +8,49 @@ ini_set('session.use_only_cookies', 1);
 // 2. Prevent session fixation attacks
 ini_set('session.use_strict_mode', 1);
 
-// 3. Set cookie parameters (using both ini_set and session_set_cookie_params for maximum compatibility)
+// 3. Set cookie parameters in a way that works on both HTTP and HTTPS
+$is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ((int)($_SERVER['SERVER_PORT'] ?? 80) === 443);
 ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1);
-ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.cookie_secure', $is_https ? '1' : '0');
+ini_set('session.cookie_samesite', 'Lax');
 
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
-    'domain' => $_SERVER['HTTP_HOST'], 
-    'secure' => true,
+    'secure' => $is_https,
     'httponly' => true,
-    'samesite' => 'Strict'
+    'samesite' => 'Lax'
 ]);
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
+}
+
+$math_operations = ['+', '-', '*'];
+$math_operation = $math_operations[array_rand($math_operations)];
+$math_left = rand(1, 9);
+$math_right = rand(1, 9);
+
+if ($math_operation === '-') {
+    $math_left = rand(5, 15);
+    $math_right = rand(1, $math_left);
+}
+
+if ($math_operation === '*') {
+    $math_left = rand(1, 5);
+    $math_right = rand(1, 5);
+}
+
+switch ($math_operation) {
+    case '-':
+        $_SESSION['admin_math_answer'] = $math_left - $math_right;
+        break;
+    case '*':
+        $_SESSION['admin_math_answer'] = $math_left * $math_right;
+        break;
+    default:
+        $_SESSION['admin_math_answer'] = $math_left + $math_right;
+        break;
 }
 
 // Check if user is already logged in
@@ -32,9 +59,8 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     exit;
 }
 
-// Check if reCAPTCHA should be displayed (after 3 failed attempts)
-// FIX: Updated to match backend variable name
-$show_recaptcha = (isset($_SESSION['admin_login_attempts']) && $_SESSION['admin_login_attempts'] >= 3);
+// Show reCAPTCHA before lockout kicks in so it is actually usable
+$show_recaptcha = (isset($_SESSION['admin_login_attempts']) && $_SESSION['admin_login_attempts'] >= 2);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -134,6 +160,11 @@ $show_recaptcha = (isset($_SESSION['admin_login_attempts']) && $_SESSION['admin_
             <div class="form-group">
                 <i class="fas fa-lock"></i>
                 <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-calculator"></i>
+                <input type="number" class="form-control" id="math_answer" name="math_answer" required placeholder="Solve: <?php echo $math_left . ' ' . $math_operation . ' ' . $math_right; ?> = ?">
             </div>
 
             <?php if ($show_recaptcha): ?>

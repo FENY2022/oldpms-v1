@@ -1,4 +1,17 @@
 <?php
+    $is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ((int)($_SERVER['SERVER_PORT'] ?? 80) === 443);
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.cookie_secure', $is_https ? '1' : '0');
+    ini_set('session.cookie_samesite', 'Lax');
+
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => $is_https,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
@@ -11,10 +24,11 @@
 
     define('ADMIN_MAX_LOGIN_ATTEMPTS', 3);
     define('ADMIN_LOCKOUT_SECONDS', 180);
+    define('ADMIN_RECAPTCHA_ATTEMPTS', 2);
 
     function redirectWithLoginError($message) {
         $error = urlencode($message);
-        echo "<script type='text/javascript'>location='login.php?error={$error}';</script>";
+        header("Location: login.php?error={$error}");
         exit();
     }
 
@@ -28,6 +42,21 @@
 
         $attempts_left = ADMIN_MAX_LOGIN_ATTEMPTS - $_SESSION['admin_login_attempts'];
         redirectWithLoginError($message . ' ' . $attempts_left . ' attempts remaining.');
+    }
+
+    function validateAdminMathChallenge() {
+        $math_answer = filter_input(INPUT_POST, 'math_answer', FILTER_VALIDATE_INT);
+
+        if (!isset($_SESSION['admin_math_answer']) || $math_answer === false || $math_answer !== (int) $_SESSION['admin_math_answer']) {
+            unset($_SESSION['admin_math_answer']);
+            registerFailedLogin('Math answer is incorrect.');
+        }
+
+        unset($_SESSION['admin_math_answer']);
+    }
+
+    function isAdminRecaptchaRequired() {
+        return (isset($_SESSION['admin_login_attempts']) && $_SESSION['admin_login_attempts'] >= ADMIN_RECAPTCHA_ATTEMPTS);
     }
 
     function redirectByRole($roleId) {
@@ -62,7 +91,7 @@
         exit();
     }
     
-    if (isset($_POST['btn'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // --- Account Lockout Check ---
         if (isset($_SESSION['admin_lockout_time']) && time() < $_SESSION['admin_lockout_time']) {
@@ -70,14 +99,18 @@
             redirectWithLoginError("Account locked due to too many failed attempts. Try again in $wait seconds.");
         }
 
-        // --- Verify reCAPTCHA ---
-        $recaptcha_secret = '6LeTIY0sAAAAAHPR6a4KnPDoFVaeu0Jb-0UoO37G';
-        $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
-        $verify_response = @file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($recaptcha_secret) . '&response=' . urlencode($recaptcha_response));
-        $response_data = json_decode($verify_response);
-        
-        if (!$response_data || !$response_data->success) {
-            registerFailedLogin('reCAPTCHA validation failed. Please check the box.');
+        validateAdminMathChallenge();
+
+        // --- Verify reCAPTCHA only when it is shown ---
+        if (isAdminRecaptchaRequired()) {
+            $recaptcha_secret = '6LeTIY0sAAAAAHPR6a4KnPDoFVaeu0Jb-0UoO37G';
+            $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
+            $verify_response = @file_get_contents('https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode($recaptcha_secret) . '&response=' . urlencode($recaptcha_response));
+            $response_data = json_decode($verify_response);
+
+            if (!$response_data || !$response_data->success) {
+                registerFailedLogin('reCAPTCHA validation failed. Please check the box.');
+            }
         }
 
         $username = trim($_POST['username'] ?? '');
@@ -116,5 +149,8 @@
                 registerFailedLogin('Invalid Password.');
             }
         }
+    } else {
+        header("Location: login.php");
+        exit();
     }
  ?>

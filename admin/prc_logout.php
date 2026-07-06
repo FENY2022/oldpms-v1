@@ -1,7 +1,19 @@
 
-                            <?php 
-                            
-                  
+<?php 
+                             
+                  $is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ((int)($_SERVER['SERVER_PORT'] ?? 80) === 443);
+                  ini_set('session.cookie_httponly', 1);
+                  ini_set('session.cookie_secure', $is_https ? '1' : '0');
+                  ini_set('session.cookie_samesite', 'Lax');
+
+                  session_set_cookie_params([
+                    'lifetime' => 0,
+                    'path' => '/',
+                    'secure' => $is_https,
+                    'httponly' => true,
+                    'samesite' => 'Lax'
+                  ]);
+
                   if (session_status() == PHP_SESSION_NONE) {
                       session_start();
                       }
