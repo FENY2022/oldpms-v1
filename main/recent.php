@@ -18,7 +18,7 @@ $clientname = $userRow['name'] ?? '';
 $user_role = $userRow['user_role_id'] ?? '';
 $office_id = $userRow['office_id'] ?? '';
 
-$sql = "SELECT ccdh.id, ccdh.lumber_app_id, ccdh.Date, ccdh.Time, ccdh.Title, ccdh.Details, la.bussiness_name, la.full_address
+$sql = "SELECT ccdh.id, ccdh.lumber_app_id, ccdh.Date, ccdh.Time, ccdh.Title, ccdh.Details, la.bussiness_name, la.full_address, la.Flow_stat
         FROM client_client_document_history ccdh
         LEFT JOIN lumber_application la ON la.lumber_app_id = ccdh.lumber_app_id
         WHERE ccdh.Action_ = 'RO_APPROVER'
@@ -32,6 +32,20 @@ function formatRecentDetails($details) {
     $details = str_replace(array('<br>', '<br/>', '<br />'), "\n", $details);
 
     return nl2br(htmlentities($details, ENT_QUOTES, 'UTF-8'));
+}
+
+function getDestinationAccount(array $row) {
+    $flowStat = (string) ($row['Flow_stat'] ?? '');
+
+    $destinationMap = array(
+        '17' => 'Julie Montalban',
+    );
+
+    if (isset($destinationMap[$flowStat])) {
+        return $destinationMap[$flowStat];
+    }
+
+    return 'Julie Montalban';
 }
 ?>
 <!DOCTYPE html>
@@ -102,7 +116,7 @@ function formatRecentDetails($details) {
                                             <th class="col-app">App ID</th>
                                             <th class="col-business">Business Name</th>
                                             <th class="col-address">Address</th>
-                                            <th class="col-account">Padulong nga Account</th>
+                                            <th class="col-account">Destination Account</th>
                                             <th class="col-details">Details</th>
                                         </tr>
                                     </thead>
@@ -116,7 +130,7 @@ function formatRecentDetails($details) {
                                                     <td><?= htmlentities($row['lumber_app_id'] ?? '') ?></td>
                                                     <td><?= htmlentities($row['bussiness_name'] ?? '-') ?></td>
                                                     <td><?= htmlentities($row['full_address'] ?? '-') ?></td>
-                                                    <td><?= htmlentities($row['Title'] ?? '') ?></td>
+                                                    <td><?= htmlentities(getDestinationAccount($row)) ?></td>
                                                     <td><div class="details-box"><?= formatRecentDetails($row['Details'] ?? '') ?></div></td>
                                                 </tr>
                                             <?php endforeach; ?>
