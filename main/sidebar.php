@@ -42,6 +42,10 @@ $stmt->close();
 
 $user_role_name = !empty($lumber_ap_row2['role']) ? $lumber_ap_row2['role'] : "";
 
+$currentPage = basename($_SERVER['PHP_SELF']);
+$forActionOpen = in_array($currentPage, ['action.php', 'recent.php', 'evaluationROapprover.php'], true);
+$reportOpen = in_array($currentPage, ['table1.php', 'tableic.php'], true);
+
 // Fetch office cover
 $office_cover = null;
 $stmt = $con->prepare("SELECT office_cover FROM muncity WHERE office_id = ?");
@@ -135,9 +139,16 @@ $stmt->close();
                     $stmt->close();
                     ?>
 
-                    <li><a href="action.php"><i class="fas fa-fw fa-edit"></i> For Action </a></li>
-                    <li><a><i class="fas fa-fw fa-solid fa-file-text"></i> Report <span class="fa fa-chevron-down"></span></a>
-                        <ul class="nav child_menu">
+                    <li class="<?php echo $forActionOpen ? 'active' : ''; ?>">
+                        <a href="javascript:void(0);" class="menu-parent"><i class="fas fa-fw fa-edit text-white"></i> For Action <span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu" style="<?php echo $forActionOpen ? 'display:block;' : 'display:none;'; ?>">
+                            <li><a href="action.php" class="text-white">Action List</a></li>
+                            <li><a href="recent.php" class="text-white">Recent</a></li>
+                        </ul>
+                    </li>
+                    <li class="<?php echo $reportOpen ? 'active' : ''; ?>">
+                        <a href="javascript:void(0);" class="menu-parent"><i class="fas fa-fw fa-solid fa-file-text"></i> Report <span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu" style="<?php echo $reportOpen ? 'display:block;' : 'display:none;'; ?>">
 
                             <li>
                                 <a href="table1.php" class="text-white">
@@ -174,6 +185,38 @@ $stmt->close();
         </div>
         </div>
 </div>
+
+<script>
+  (function () {
+    var sidebar = document.getElementById('sidebar-menu');
+    if (!sidebar) return;
+
+    var parents = sidebar.querySelectorAll('a.menu-parent');
+    parents.forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var li = link.parentElement;
+        var menu = li.querySelector(':scope > ul.child_menu');
+        if (!menu) return;
+
+        var isOpen = menu.style.display === 'block';
+        sidebar.querySelectorAll('ul.child_menu').forEach(function (otherMenu) {
+          otherMenu.style.display = 'none';
+          if (otherMenu.parentElement) {
+            otherMenu.parentElement.classList.remove('active');
+          }
+        });
+
+        if (!isOpen) {
+          menu.style.display = 'block';
+          li.classList.add('active');
+        }
+      }, true);
+    });
+  })();
+</script>
 
 <div class="modal fade" id="analysisModal" tabindex="-1" aria-labelledby="analysisModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl">

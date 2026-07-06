@@ -36,10 +36,6 @@ include('../processphp/config.php');
                
                $user_role = $lumber_ap_row['user_role_id'] ;
 
-               if ($user_role != '99') {
-                 header('Location: prc_logout.php');
-                 exit;
-               }
 
 
 

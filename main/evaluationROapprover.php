@@ -69,10 +69,11 @@ $full_address = $_GET['full_address'];
                     <ul class="nav navbar-right panel_toolbox">
 						<div class="row justify-content-center">
 							  <li>
-                                <form method="POST" id="approveForm">
-                                    <button type="button" class="btn-primary btn-sm btn-round btn ml-0" data-toggle="modal" data-target="#approveModal">
-                                        <span class="text align-content-center text-white"><strong>Approve</strong></span>
-                                        <span class="icon ml-2">
+                                    <form method="POST" id="approveForm">
+                                        <input type="hidden" name="Approve" value="1">
+                                        <button type="button" class="btn-primary btn-sm btn-round btn ml-0" data-toggle="modal" data-target="#approveModal">
+                                            <span class="text align-content-center text-white"><strong>Approve</strong></span>
+                                            <span class="icon ml-2">
                                             <i class="fas fa-check-to-slot text-white"></i>
                                         </span>
                                     </button>
@@ -122,30 +123,34 @@ date_default_timezone_set("Asia/Manila");
 $Time = date("h:i:sa");
 
    $Title = 'Regional Executive Director';
-   $Details = 'Final document review, approval of the Lumber Dealer E-Permit, Memorandum informing concerned PENROs and CENROs of the approved endorsed lumber dealer application and the acknowledgment letter for the applicant confirming that the e-permit was received.'.'<br><br>'.'
-  
-   Approved E-Permit and Acknowledgement Letter forwarded to Records Unit to release the documents.
-   ';
+    $Details = 'Final document review, approval of the Lumber Dealer E-Permit, Memorandum informing concerned PENROs and CENROs of the approved endorsed lumber dealer application and the acknowledgment letter for the applicant confirming that the e-permit was received.'.'<br><br>'.'
    
-   $query2 = $connection->prepare("INSERT INTO client_client_document_history(
-    lumber_app_id,
-    Date,
-    Title,
-    Details,
-    Time
-    )
-   VALUES (
-    :lumber_app_id,
-    :Date,
-    :Title,
-    :Details,
-    :Time
-    )");
-   $query2->bindParam("lumber_app_id", $l_id, PDO::PARAM_STR);
-   $query2->bindParam("Date", $date2, PDO::PARAM_STR);
-   $query2->bindParam("Title", $Title, PDO::PARAM_STR);
-   $query2->bindParam("Details", $Details, PDO::PARAM_STR);
-   $query2->bindParam("Time", $Time, PDO::PARAM_STR);
+   Approved E-Permit and Acknowledgement Letter forwarded to Records Unit to release the documents.
+    ';
+   
+    $query2 = $connection->prepare("INSERT INTO client_client_document_history(
+     lumber_app_id,
+     Date,
+     Title,
+     Details,
+     Time,
+     Action_
+     )
+    VALUES (
+     :lumber_app_id,
+     :Date,
+     :Title,
+     :Details,
+     :Time,
+     :Action_
+     )");
+    $query2->bindParam("lumber_app_id", $l_id, PDO::PARAM_STR);
+    $query2->bindParam("Date", $date2, PDO::PARAM_STR);
+    $query2->bindParam("Title", $Title, PDO::PARAM_STR);
+    $query2->bindParam("Details", $Details, PDO::PARAM_STR);
+    $query2->bindParam("Time", $Time, PDO::PARAM_STR);
+    $actionSource = 'RO_APPROVER';
+    $query2->bindParam("Action_", $actionSource, PDO::PARAM_STR);
    
    $result2 = $query2->execute();
 
@@ -344,7 +349,7 @@ while ( $row = $stmt->fetch(PDO::FETCH_ASSOC) ) {
             <button type="button" class="btn btn-outline-secondary btn-lg px-4" data-dismiss="modal">
               <i class="fas fa-times me-2"></i>Cancel
             </button>
-            <button type="button" class="btn btn-success btn-lg px-5 shadow-sm" onclick="document.getElementById('approveForm').submit()">
+                                                    <button type="button" class="btn btn-success btn-lg px-5 shadow-sm" onclick="document.getElementById('approveForm').submit()">
               <i class="fas fa-check me-2"></i>Approve
             </button>
           </div>

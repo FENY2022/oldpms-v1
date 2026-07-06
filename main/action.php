@@ -179,6 +179,19 @@ include('../processphp/config.php');
 			$safeValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 			return '<img src="https://qrcode.tec-it.com/API/QRCode?data=' . urlencode($value) . '" class="img-fluid" alt="QR code for ' . $safeValue . '" width="' . (int) $size . '" height="' . (int) $size . '">';
 		}
+
+		function renderRecentHistoryLink($row) {
+			$recentHistory = trim((string) ($row['recent_history'] ?? ''));
+
+			if ($recentHistory === '' || $recentHistory === '-') {
+				return '-';
+			}
+
+			$lumberAppId = urlencode((string) ($row['lumber_app_id'] ?? ''));
+			$businessName = urlencode((string) ($row['bussiness_name'] ?? ''));
+
+			return '<a href="../client/doctracker.php?lumber_app_id=' . $lumberAppId . '&bussiness_name=' . $businessName . '" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-underline">' . htmlentities($recentHistory) . '</a>';
+		}
 	        $dateyear = date('Y');
 
 
@@ -313,7 +326,7 @@ include('../processphp/config.php');
                   echo('<a class="badge badge-danger" >For review CENRO FUU</a>');
                   // echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
                   echo("</td><td>");
-                  echo(htmlentities($row['recent_history'] ?? '-'));
+                  echo renderRecentHistoryLink($row);
                   echo("</td><td>");
             
                   echo('<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#evaluationModal'.$row['lumber_app_id'].'">View</button>');
@@ -326,7 +339,7 @@ include('../processphp/config.php');
 				if (($row['Status']) == ($ForReceive_ROFUS)){
           echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
           echo("</td><td>");
-          echo(htmlentities($row['recent_history'] ?? '-'));
+           echo renderRecentHistoryLink($row);
           echo("</td><td>");
 					echo('<a class="btn btn-warning" href="prc_receive.php?lumber_app_id='.$row['lumber_app_id'].'">Receive</a>');
 
@@ -337,7 +350,7 @@ include('../processphp/config.php');
 	
           echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
           echo("</td><td>");
-          echo(htmlentities($row['recent_history'] ?? '-'));
+           echo renderRecentHistoryLink($row);
           echo("</td><td>");
 					echo('<a class="btn btn-warning" href="evaluation.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
@@ -348,7 +361,7 @@ include('../processphp/config.php');
 
             echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
             echo("</td><td>");
-            echo(htmlentities($row['recent_history'] ?? '-'));
+             echo renderRecentHistoryLink($row);
             echo("</td><td>");
             echo('<a class="btn btn-warning" href="evaluationlpdd.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
@@ -360,7 +373,7 @@ include('../processphp/config.php');
           elseif (($row['Status']) == ($For_Recommend_RO)){
             echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
             echo("</td><td>");
-            echo(htmlentities($row['recent_history'] ?? '-'));
+             echo renderRecentHistoryLink($row);
             echo("</td><td>");
             echo('<a class="btn btn-warning" href="evaluationlRORecommender.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
@@ -369,7 +382,7 @@ include('../processphp/config.php');
           elseif (($row['Status']) == ($For_Approval_RED)){
             echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
             echo("</td><td>");
-            echo(htmlentities($row['recent_history'] ?? '-'));
+             echo renderRecentHistoryLink($row);
             echo("</td><td>");
             echo('<a class="btn btn-warning" href="evaluationROapprover.php?lumber_app_id='.$row['lumber_app_id'].'&bussiness_name='.$row['bussiness_name'].'&full_address='.$row['full_address'].'">Review</a>');
             
@@ -379,7 +392,7 @@ include('../processphp/config.php');
 
             echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
             echo("</td><td>");
-            echo(htmlentities($row['recent_history'] ?? '-'));
+             echo renderRecentHistoryLink($row);
             echo("</td><td>");
             echo('<a class="btn btn-warning" href="records/action.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
 
