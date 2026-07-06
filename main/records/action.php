@@ -169,11 +169,22 @@
                 <?php
 
 
-    function getFullMonthNameFromDate($date){
-     $monthName = date('F d, Y', strtotime($date));
-     return $monthName;
-          }
-        $dateyear = date('Y');
+	    function getFullMonthNameFromDate($date){
+	     $monthName = date('F d, Y', strtotime($date));
+	     return $monthName;
+	          }
+
+		function renderQrCode($value, $size = 50){
+			$value = trim((string) $value);
+
+			if ($value === '') {
+				return '<span class="text-muted">QR not available</span>';
+			}
+
+			$safeValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+			return '<img src="https://qrcode.tec-it.com/API/QRCode?data=' . urlencode($value) . '" class="img-fluid" alt="QR code for ' . $safeValue . '" width="' . (int) $size . '" height="' . (int) $size . '">';
+		}
+	        $dateyear = date('Y');
 
 
 
@@ -200,8 +211,8 @@
 
                 echo "<tr><td>" ;
                 // echo(htmlentities($row['lumber_app_id']));
-                echo('<img src="https://qrcode.tec-it.com/API/QRCode?data='.$row['uniqid_lapp'].'" class="img-fluid" alt="QR Not available"  width="50" height="50t"');
-                echo("</td><td>");
+	                echo renderQrCode($row['uniqid_lapp']);
+	                echo("</td><td>");
                 echo(htmlentities($row['perm_fname']) . ' ' . ($row['perm_lname']));
                 echo("</td><td>");
                 echo(htmlentities($row['bussiness_name']));
