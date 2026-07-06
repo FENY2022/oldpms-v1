@@ -63,6 +63,110 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
   $user_role = $lumber_ap_row['user_role_id'];
   $office_id = $lumber_ap_row['office_id'];
 
+  function getNextActionRoleId($flowStat) {
+    $flowRoleMap = array(
+      '0' => '1',
+      '1' => '1',
+      '2' => '2',
+      '3' => '1',
+      '4' => '1',
+      '6' => '1',
+      '6.1' => '1',
+      '6.2' => '1',
+      '6.3' => '1',
+      '7' => '7',
+      '8' => '8',
+      '9' => '9',
+      '9.1' => '9.1',
+      '10' => '10',
+      '11' => '11',
+      '12' => '12',
+      '12.5' => '12.5',
+      '13' => '13',
+      '14' => '14',
+      '15' => '15',
+      '16' => '16',
+      '17' => '17'
+    );
+
+    $flowStat = trim((string)$flowStat);
+    return isset($flowRoleMap[$flowStat]) ? $flowRoleMap[$flowStat] : '';
+  }
+
+  function getNextActionUsers($con, $row) {
+    $status = isset($row['Status']) ? trim($row['Status']) : '';
+    $applicationStatus = isset($row['Application_status']) ? trim($row['Application_status']) : '';
+
+    if ($status === 'For Re-apply') {
+      return 'For client compliance / re-apply';
+    }
+
+    if ($status === 'For Client' || $applicationStatus === 'Complete') {
+      return 'Completed / for client';
+    }
+
+    $flowStat = isset($row['Flow_stat']) ? $row['Flow_stat'] : '';
+    $roleId = getNextActionRoleId($flowStat);
+
+    if ($roleId === '') {
+      return 'No assigned account';
+    }
+
+    $officeId = isset($row['Office_id']) ? (int)$row['Office_id'] : 0;
+    $office = isset($row['Office']) ? trim($row['Office']) : '';
+    $officeUnder = isset($row['office_under']) ? trim($row['office_under']) : '';
+    $flowStat = trim((string)$flowStat);
+    $names = array();
+
+    if (in_array($flowStat, array('9.1', '10', '11', '12'), true)) {
+      $sql = "SELECT du.name
+              FROM denr_users du
+              INNER JOIN office o ON o.office_id = du.office_id
+              WHERE du.user_role_id = ? AND o.station = ?
+              ORDER BY du.name ASC";
+      $stmt = $con->prepare($sql);
+      if ($stmt) {
+        $stmt->bind_param('ss', $roleId, $officeUnder);
+      }
+    } elseif (in_array($flowStat, array('12.5', '13', '14', '15', '16', '17'), true)) {
+      $sql = "SELECT name FROM denr_users WHERE user_role_id = ? ORDER BY name ASC";
+      $stmt = $con->prepare($sql);
+      if ($stmt) {
+        $stmt->bind_param('s', $roleId);
+      }
+    } else {
+      $sql = "SELECT DISTINCT du.name
+              FROM denr_users du
+              LEFT JOIN office o ON o.office_id = du.office_id
+              WHERE du.user_role_id = ?
+              AND ((? > 0 AND du.office_id = ?) OR (? <> '' AND o.station = ?))
+              ORDER BY du.name ASC";
+      $stmt = $con->prepare($sql);
+      if ($stmt) {
+        $stmt->bind_param('siiss', $roleId, $officeId, $officeId, $office, $office);
+      }
+    }
+
+    if (!$stmt || !$stmt->execute()) {
+      return 'No assigned account';
+    }
+
+    $result = $stmt->get_result();
+    while ($user = $result->fetch_assoc()) {
+      if (!empty($user['name'])) {
+        $names[] = $user['name'];
+      }
+    }
+
+    $stmt->close();
+
+    if (empty($names)) {
+      return 'No assigned account';
+    }
+
+    return implode(', ', $names);
+  }
+
 
 
   
@@ -112,6 +216,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
       <th scope="col">Registration Number</th>
       <th scope="col">Office</th>
       <th scope="col">Status</th>
+      <th scope="col">Flow Stat</th>
+      <th scope="col">Next Action</th>
       <th scope="col">Action</th>
     </tr>
 
@@ -140,6 +246,8 @@ while ($row = mysqli_fetch_array($province,MYSQLI_ASSOC)):;
         $oldpmsId = $row['lumber_app_id'];
         $bussiness_name = $row['bussiness_name'];
         $srfId = $row['lumber_app_id'];
+        $nextActionUsers = getNextActionUsers($con, $row);
+        $padulongBadgeClass = (isset($row['Status']) && trim($row['Status']) === 'For Re-apply') ? 'badge-danger' : 'badge-info';
 
          echo   '<tr>' ;
          echo   '<th scope="row">'.$row['lumber_app_id'].'</th>';
@@ -148,6 +256,8 @@ while ($row = mysqli_fetch_array($province,MYSQLI_ASSOC)):;
          echo   '<td>'.$row['Registration_Number'].'</td>';
          echo   '<td>'.$row['Office'].'</td>';
          echo   '<td>'.$row['Status'].'</td>';
+         echo   '<td>'.htmlspecialchars($row['Flow_stat'], ENT_QUOTES, 'UTF-8').'</td>';
+         echo   '<td><span class="badge '.$padulongBadgeClass.'" style="white-space: normal; text-align: left;">'.htmlspecialchars($nextActionUsers, ENT_QUOTES, 'UTF-8').'</span></td>';
 
 
          echo "
