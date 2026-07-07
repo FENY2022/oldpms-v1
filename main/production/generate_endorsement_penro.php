@@ -16,6 +16,11 @@ $lumber_app = "SELECT * FROM c_endorsement where lumber_app_id = $lumber_app_id 
 $lumber_app_qry = mysqli_query($con, $lumber_app);
 $lumber_ap_row = mysqli_fetch_assoc($lumber_app_qry);
 
+$status_qry = mysqli_query($con, "SELECT Status_ FROM lumber_application WHERE lumber_app_id = $lumber_app_id");
+$status_row = mysqli_fetch_assoc($status_qry);
+$application_label = (!empty($status_row['Status_']) && strtolower($status_row['Status_']) === 'renewal') ? 'RENEWAL APPLICATION' : 'NEW APPLICATION';
+$application_label_text = strtolower($application_label);
+
 
 
                     $lumber_app_id  = $lumber_ap_row['lumber_app_id'];
@@ -63,9 +68,9 @@ $dompdf->setPaper("LEGAL", "portrait");
                             $html = file_get_contents("template_short.php");
 
                             $html = str_replace(["{{ office_address }}", "{{ office_under }}", "{{ penroaddress }}", "{{ bussiness_name }}", "{{ full_address }}", "{{ date_ }}", 
-                            "{{ ldname }}", "{{ owner }}", "{{ ldaddress }}", "{{ MPdateissued }}", "{{ MPdateexpiry }}", "{{ BNNumber }}", "{{ DTIdateissued }}", "{{ DTIdateexpiry }}", 
+                            "{{ application_label }}", "{{ application_label_text }}", "{{ ldname }}", "{{ owner }}", "{{ ldaddress }}", "{{ MPdateissued }}", "{{ MPdateexpiry }}", "{{ BNNumber }}", "{{ DTIdateissued }}", "{{ DTIdateexpiry }}", 
                             "{{ SCtype }}", "{{ municipal }}", "{{ province2 }}", "{{ totalsupply }}", "{{ particulars }}", "{{ treespecie }}", "{{ lumber_app_id }}" ], 
-                            [$office_address, $office_under,$penroaddress,$bussiness_name,$full_address,$date_,$ldname,$owner,$ldaddress,$MPdateissued,$MPdateexpiry,$BNNumber,$DTIdateissued,
+                            [$office_address, $office_under,$penroaddress,$bussiness_name,$full_address,$date_,$application_label,$application_label_text,$ldname,$owner,$ldaddress,$MPdateissued,$MPdateexpiry,$BNNumber,$DTIdateissued,
                             $DTIdateexpiry,$SCtype,$municipal,$province2,$totalsupply,$particulars,$treespecie, $lumber_app_id], $html);
 
                             // $html = str_replace(["{{ office_address }}"], 

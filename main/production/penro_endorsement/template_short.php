@@ -82,11 +82,11 @@
 	</table> -->
 	</br>
 	<table border="0">
-		 <tr>
-		 <td style="width:13%;padding-bottom:37px;"><strong>SUBJECT</strong></td>
-		 <td style="width:7%;padding-bottom:37px;"><strong>:</strong></td>
-		 <td style="width:80%;text-transform:uppercase;text-align:justify; padding-bottom:20px;"><strong>NEW APPLICATION OF {{ bussiness_name }} FOR CERTIFICATE OF REGISTRATION AS LUMBER DEALER LOCATED AT {{ full_address }}.</strong></td>
-		 </tr>
+		<tr>
+		<td style="width:13%;padding-bottom:37px;"><strong>SUBJECT</strong></td>
+		<td style="width:7%;padding-bottom:37px;"><strong>:</strong></td>
+		<td style="width:80%;text-transform:uppercase;text-align:justify; padding-bottom:20px;"><strong>{{ application_label }} OF {{ bussiness_name }} FOR CERTIFICATE OF REGISTRATION AS LUMBER DEALER LOCATED AT {{ full_address }}.</strong></td>
+		</tr>
 	</table>
     <table>
 		 <tr>
@@ -98,7 +98,7 @@
     <br/>
    <hr style="width:100%;text-align:left;margin-left:0">
    <br/>
-   <p class="col-sm-9" style="text-align:justify;"> &nbsp; &nbsp; &nbsp; &nbsp; Respecfully forwarded is the new application for Certificate of Registration as Lumber Dealer of {{ bussiness_name }} located at {{ full_address }}.</p>
+    <p class="col-sm-9" style="text-align:justify;"> &nbsp; &nbsp; &nbsp; &nbsp; Respecfully forwarded is the {{ application_label_text }} for Certificate of Registration as Lumber Dealer of {{ bussiness_name }} located at {{ full_address }}.</p>
    <dt class="col-sm-3">Please be apprised of the following information regarding the subject application:</dt>
 	<br/>
    <dd class="col-sm-9" style="text-align:justify;">a.) <strong>{{ ldname }}</strong> is a single proprietor owned and managed by {{ owner }} with a business operation at <strong>{{ ldaddress }}</strong>. The proponent's objective are: to provide employment opportunities; and to firmly established a functional lumber yard in order to cater lumber needs of the growing economic activity in the locality and other neighboring municipalities and provinces;</dd>
