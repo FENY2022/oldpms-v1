@@ -343,7 +343,7 @@ if ($stmt) {
         </div>
         <div class="row">
 								<div class="text-center col-3 mb-3"><b><u>_____3402287011_____</u></b></div>
-								<div class="text-center col-6"><b><u>BTr-NGAs Fees and Charges</u></b></div>
+								<div class="text-center col-6"><b><u>BTr–NGAs Fees and Charges/DENR Regional Office XIII</u></b></div>
           <div class="text-center col-3">P<?php echo "<b><u>" . "_______". $formattedAmount . "______" . "</u></b>"; ?></div>
         </div>
         <div class="row">
