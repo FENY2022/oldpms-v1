@@ -41,26 +41,8 @@ include('../processphp/config.php');
 
 
 
-
-
-?> 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
+ $isEmbedded = isset($_GET['embed']) && $_GET['embed'] === '1';
+ ?> 
 
 
 
@@ -247,10 +229,36 @@ button:hover {
 
 </head>
 
-<body class="nav-md">
+<body class="<?php echo $isEmbedded ? 'bg-slate-100 embed-mode' : 'nav-md'; ?>">
+    <?php if ($isEmbedded): ?>
+    <style>
+        body.embed-mode .col-md-3.left_col,
+        body.embed-mode .top_nav,
+        body.embed-mode footer,
+        body.embed-mode .footer,
+        body.embed-mode .footer_fixed,
+        body.embed-mode .site-footer {
+            display: none !important;
+        }
+
+        body.embed-mode .container.body,
+        body.embed-mode .main_container,
+        body.embed-mode .right_col {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        body.embed-mode .right_col {
+            min-height: auto !important;
+        }
+    </style>
+    <?php endif; ?>
     <div class="container body">
       <div class="main_container">
       
+    <?php if (!$isEmbedded): ?>
     <!-- sidebar navigation -->        
       <?php
         require_once('adminsidebar.php');
@@ -264,24 +272,26 @@ button:hover {
       ?> 
       
         <!-- /top navigation -->
+    <?php endif; ?>
 
 <!-- page content -->
       <div class="right_col" role="main">
         <div class="">
         
-        <div style="height: 100px;">
-</div>
+<div class="<?php echo $isEmbedded ? 'h-6' : ''; ?>" style="<?php echo $isEmbedded ? '' : 'height: 100px;'; ?>"></div>
 
 
 
-<?php 
-require_once 'adminfooter.php';
-?>
+<?php if (!$isEmbedded) { require_once 'adminfooter.php'; } ?>
 
 <?php
 // Assuming you already have a database connection established
 
 // Check if the id is posted
+if(isset($_GET['office_id'])) {
+    $_SESSION['desired_office_id'] = $_GET['office_id'];
+}
+
 if(isset($_POST['id'])) {
     // If id is posted, store it in session
     $_SESSION['desired_office_id'] = $_POST['id'];
@@ -357,10 +367,13 @@ if ($result->num_rows > 0) {
 
        
         echo "<form method='GET' hidden>";
-       
+        
         echo "<input type='hidden' name='user_id' value='" . $row['user_id'] . "' />";
+        if ($isEmbedded) {
+            echo "<input type='hidden' name='embed' value='1' />";
+        }
         echo "<td>";
-        echo "<button type='submit' class='btn btn-primary'>Edit</button>";
+        echo "<button type='submit' class='btn btn-primary' data-loading-button='true' data-loading-text='Loading...'>Edit</button>";
         echo "</td>";
         echo "</form>";
        
@@ -501,6 +514,41 @@ if ($result->num_rows > 0) {
 
     </script>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function setLoadingState(control) {
+      if (!control || control.disabled) {
+        return;
+      }
+
+      if (!control.dataset.originalLabel) {
+        control.dataset.originalLabel = control.tagName === 'INPUT' ? control.value : control.innerHTML;
+      }
+
+      var loadingText = control.getAttribute('data-loading-text') || 'Loading...';
+      control.disabled = true;
+      control.setAttribute('aria-busy', 'true');
+
+      if (control.tagName === 'INPUT') {
+        control.value = loadingText;
+      } else {
+        control.innerHTML = '<span class="inline-flex items-center gap-2"><span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span><span>' + loadingText + '</span></span>';
+      }
+    }
+
+    document.querySelectorAll('form').forEach(function (form) {
+      form.addEventListener('submit', function () {
+        var submitters = form.querySelectorAll("button[type='submit'], input[type='submit']");
+        submitters.forEach(function (submitter) {
+          if (submitter.hasAttribute('data-loading-button')) {
+            setLoadingState(submitter);
+          }
+        });
+      });
+    });
+  });
+</script>
+
 <!-- Modal -->
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -515,6 +563,9 @@ if ($result->num_rows > 0) {
 
 
       <form method="POST" action="updateuser.php" >
+        <?php if ($isEmbedded): ?>
+        <input type="hidden" name="embed" value="1">
+        <?php endif; ?>
         <label for="user_id">User ID:</label>
         <input type="text" name="user_id" id="user_id" value="<?php echo  $user_id = !empty($user['user_id']) ? $user['user_id'] : ""; ?>">
         
@@ -552,7 +603,7 @@ if ($result->num_rows > 0) {
             <img src="default_signature.png" alt="No Signature">
         <?php endif; ?>
         <br>       <br>
-<button type="submit" name="submit">Update</button>
+<button type="submit" name="submit" data-loading-button="true" data-loading-text="Saving...">Update</button>
 
 </form>
 
@@ -560,10 +611,13 @@ if ($result->num_rows > 0) {
     
     <!-- Signature Uploader -->
     <form action="userprofile_uploadhandler.php" method="post" enctype="multipart/form-data">
+        <?php if ($isEmbedded): ?>
+        <input type="hidden" name="embed" value="1">
+        <?php endif; ?>
         <h3>Signature</h3>
         <input type="file" name="signature" accept="image/*" id="fileInput">
         <input type="hidden"  value="<?php echo is_null($user_id) ? '' : $user_id; ?>" name="id">
-        <input type="submit" name="uploadEsig" class=" btn-primary" value="Upload">
+        <input type="submit" name="uploadEsig" class=" btn-primary" data-loading-button="true" data-loading-text="Uploading..." value="Upload">
     </form>
     
     <!-- Signature Viewer -->
@@ -572,6 +626,9 @@ if ($result->num_rows > 0) {
     <br>
 
         <form method="post" action="password_handler.php" onsubmit="return validateForm();">
+        <?php if ($isEmbedded): ?>
+        <input type="hidden" name="embed" value="1">
+        <?php endif; ?>
 
             <h3> Set Signature </h3>
 
@@ -600,7 +657,7 @@ if ($result->num_rows > 0) {
         <label for="confirm_password">Confirm Password:</label>
         <input type="password" id="confirm_password" oninput="validatePassword()" name="confirm_password" required>
         <br><br>
-        <input type="submit" value="Set Password" id="submit_button" >
+        <input type="submit" value="Set Password" id="submit_button" data-loading-button="true" data-loading-text="Saving..." >
 
         
         <br><br>
