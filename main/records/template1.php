@@ -181,7 +181,7 @@
         </table>
     </div>
     
-    <footer>The original of this document is in digital format</footer>
+    <footer>The original of this document is in digital format and is maintained in the DENR Caraga electronic signature system.</footer>
 
 </table>
 </div>

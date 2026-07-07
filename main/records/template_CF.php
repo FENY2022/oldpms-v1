@@ -126,7 +126,7 @@
 <p style="font-size: 12px;">DENR-13, Ambago, Butuan City, Philippines</p>
 <p style="font-size: 12px;">Telephone Nos. (085) 8171545 E-Mail: r13@denr.gov.ph</p>
 
-<div class="digital-notice">"The original of this document is in digital format."</div>
+<div class="digital-notice">"The original of this document is in digital format and is maintained in the DENR Caraga electronic signature system."</div>
 
 </footer>
 </div>
