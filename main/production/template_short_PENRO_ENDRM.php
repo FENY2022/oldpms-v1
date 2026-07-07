@@ -5,7 +5,7 @@ if (isset($_POST['lumber_app_id']))
 
 ?>
 
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">

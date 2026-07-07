@@ -412,9 +412,9 @@ if ($stmt) {
           <div class="text-center mb-3" style="display: table-cell; width: 25%;"><u>Amount</u></div>
         </div>
         <div class="row mb-3 mt-3">
-          <div class="text-center mb-3" style="display: table-cell; border-bottom: 1px solid black; width: 25%;"> 3402284420 </div>
+          <div class="text-center mb-3" style="display: table-cell; border-bottom: 1px solid black; width: 25%;"> 3402287011 </div>
           <div class="text-center mb-3" style="display: table-cell; width: 5%;">  </div>
-          <div class="text-center mb-3" style="display: table-cell; border-bottom: 1px solid black; width: 40%;"> BTr-Regular Fund/DENR Regional Office XIII </div>
+          <div class="text-center mb-3" style="display: table-cell; border-bottom: 1px solid black; width: 40%;"> BTr-NGAs Fees and Charges </div>
           <div class="text-center mb-3" style="display: table-cell; width: 5%;">  </div>         
           <div class="text-center mb-3" style="display: table-cell; border-bottom: 1px solid black; width: 25%;"> P<?php echo  $formattedAmount ; ?>  </div>
         </div>

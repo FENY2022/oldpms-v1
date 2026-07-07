@@ -14,11 +14,11 @@
 												<div class="form-group row">
 													<label class="col-form-label col-md-1 col-sm-1 ">No.:</label>
 													<div class="col-md-2 col-sm-2 ">
-														<input type="text" class="form-control" value="3402284420" placeholder="Bank Number" name="Bank_no" required>
+										<input type="text" class="form-control" value="3402287011" placeholder="Bank Number" name="Bank_no" required>
 													</div>
 													<label class="col-form-label col-md-1 col-sm-1 ">Name of Bank:</label>
 													<div class="col-md-2 col-sm-2 ">
-														<input type="text" class="form-control" value="BTr-Regular Fund/DENR Regional Office XIII" placeholder="Name of Bank" name="Name_of_Bank" required>
+										<input type="text" class="form-control" value="BTr-NGAs Fees and Charges" placeholder="Name of Bank" name="Name_of_Bank" required>
 													</div>
 													<label class="col-form-label col-md-1 col-sm-1 ">Amount (PHP):</label>
 													<div class="col-md-2 col-sm-2 ">
