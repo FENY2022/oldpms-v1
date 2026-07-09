@@ -521,17 +521,6 @@ if ($lumber_ap_row && ($lumber_ap_row['Number_of_doc']) == ('10')) {
                 $result = $query->execute();
 
 
-
-                $stat_uss = 'For Initial Chief RPS';
-                $Flow_stats = '7';
-
-                $sql = "UPDATE lumber_application SET Status = :Status, Flow_stat = :Flow_stat WHERE lumber_app_id = $lumber_app_id";
-                $stmt = $connection->prepare($sql);
-                $stmt->execute(array(
-                ':Status' => $stat_uss,
-                ':Flow_stat' => $Flow_stats,));
-
-
                 }
 
 
