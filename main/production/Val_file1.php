@@ -1,5 +1,7 @@
 <?php 
 
+require_once __DIR__ . '/doc_upload_helpers.php';
+
 // if (isset($_POST['Submit'])) {
 
 
@@ -41,42 +43,19 @@
 $For_Review = 'For Review' ;
 $date =  date("d/m/Y") ; 
 $doc_app_ind = '0';
-$doc_type_name = 'Lumber Dealer Photo' ;
-$Number_of_doc = '7';
-
-$query = $connection->prepare("INSERT INTO lumber_app_doc_erow(
-	lumber_app_id,   
-	name_app_doc,   
-	doc_type_name,
-	date_applied,
-	doc_status,
-	doc_app_ind,
-	Number_of_doc,
-	uniqid_lapp
-
-)
-	
-	VALUES (
-	:lumber_app_id, 
-	:name_app_doc,    
-	:doc_type_name,
-	:date_applied,
-	:doc_status,
-	:doc_app_ind,
-	:Number_of_doc,
-	:uniqid_lapp
-
-	)");
-
-$query->bindParam("lumber_app_id", $l_id, PDO::PARAM_STR);
-$query->bindParam("name_app_doc", $new_img_name, PDO::PARAM_STR);
-$query->bindParam("doc_type_name", $doc_type_name, PDO::PARAM_STR);
-$query->bindParam("date_applied", $date, PDO::PARAM_STR);
-$query->bindParam("doc_status", $For_Review, PDO::PARAM_STR);
-$query->bindParam("doc_app_ind", $doc_app_ind, PDO::PARAM_STR);
-$query->bindParam("Number_of_doc", $Number_of_doc, PDO::PARAM_STR);
-$query->bindParam("uniqid_lapp", $uniqid_lap, PDO::PARAM_STR);
-$result = $query->execute();
+				$doc_type_name = 'Lumber Dealer Photo' ;
+				$Number_of_doc = '7';
+				upsert_lumber_app_doc_row(
+					$connection,
+					$l_id,
+					$Number_of_doc,
+					$doc_type_name,
+					$new_img_name,
+					$For_Review,
+					$doc_app_ind,
+					$date,
+					$uniqid_lap
+				);
 
 
 

@@ -5,6 +5,7 @@
 
 
                 require_once "../../processphp/config.php";
+                require_once __DIR__ . '/doc_upload_helpers.php';
 
                   if (session_status() == PHP_SESSION_NONE) {
                     session_start();
@@ -303,46 +304,17 @@ if (isset($_POST['upload_doc7'])) {
                 $Number_of_doc = '7';
                 $uniqid_lap = uniqid();
 
-                $check = $connection->prepare("SELECT * FROM lumber_app_doc_erow WHERE lumber_app_id = :lumber_app_id AND Number_of_doc = :Number_of_doc");
-                $check->execute(array(
-                    ':lumber_app_id' => $lumber_app_id,
-                    ':Number_of_doc' => $Number_of_doc
-                ));
-
-                if ($check->rowCount() > 0) {
-                    $sql = "UPDATE lumber_app_doc_erow SET
-                            name_app_doc = :name_app_doc,
-                            doc_type_name = :doc_type_name,
-                            date_applied = :date_applied,
-                            doc_status = :doc_status,
-                            doc_app_ind = :doc_app_ind
-                            WHERE lumber_app_id = :lumber_app_id AND Number_of_doc = :Number_of_doc";
-                    $stmt = $connection->prepare($sql);
-                    $stmt->execute(array(
-                        ':name_app_doc' => $new_img_name,
-                        ':doc_type_name' => $doc_type_name,
-                        ':date_applied' => $date,
-                        ':doc_status' => $For_Review,
-                        ':doc_app_ind' => $doc_app_ind,
-                        ':lumber_app_id' => $lumber_app_id,
-                        ':Number_of_doc' => $Number_of_doc
-                    ));
-                } else {
-                    $query = $connection->prepare("INSERT INTO lumber_app_doc_erow(
-                        lumber_app_id, name_app_doc, doc_type_name, date_applied, doc_status, doc_app_ind, Number_of_doc, uniqid_lapp
-                    ) VALUES (
-                        :lumber_app_id, :name_app_doc, :doc_type_name, :date_applied, :doc_status, :doc_app_ind, :Number_of_doc, :uniqid_lapp
-                    )");
-                    $query->bindParam("lumber_app_id", $lumber_app_id, PDO::PARAM_STR);
-                    $query->bindParam("name_app_doc", $new_img_name, PDO::PARAM_STR);
-                    $query->bindParam("doc_type_name", $doc_type_name, PDO::PARAM_STR);
-                    $query->bindParam("date_applied", $date, PDO::PARAM_STR);
-                    $query->bindParam("doc_status", $For_Review, PDO::PARAM_STR);
-                    $query->bindParam("doc_app_ind", $doc_app_ind, PDO::PARAM_STR);
-                    $query->bindParam("Number_of_doc", $Number_of_doc, PDO::PARAM_STR);
-                    $query->bindParam("uniqid_lapp", $uniqid_lap, PDO::PARAM_STR);
-                    $query->execute();
-                }
+                upsert_lumber_app_doc_row(
+                    $connection,
+                    $lumber_app_id,
+                    $Number_of_doc,
+                    $doc_type_name,
+                    $new_img_name,
+                    $For_Review,
+                    $doc_app_ind,
+                    $date,
+                    $uniqid_lap
+                );
 
                 echo "<script>
                     alert('Document No. 7 uploaded successfully');
