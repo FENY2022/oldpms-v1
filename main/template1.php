@@ -117,7 +117,8 @@ $stmt->execute([$lumber_app_id]);
 $totalResult = 0;
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $totalResult += $row['result'];
+    $resultValue = (float) str_replace(',', '', $row['result']);
+    $totalResult += $resultValue;
 
     echo '<tr class="item">';
     echo '<td style="text-align: center">' . htmlspecialchars($row['ownername']) . '</td>';

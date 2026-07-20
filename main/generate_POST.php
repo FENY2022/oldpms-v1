@@ -104,8 +104,7 @@ $yrvalidity = '';
 
 $volume = '';
 // $_POST["volume"];
-$DTIdateexpiry = '';
-// $_POST["DTIdateexpiry"];
+$DTIdateexpiry = $_POST["DTIdateexpiry"];
 
 $yrvalidity = '';
 //  $_POST["yrvalidity"];

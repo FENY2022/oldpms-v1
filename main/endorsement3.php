@@ -206,7 +206,7 @@ $lumber_ap_row_c_endorsement = mysqli_fetch_assoc($lumber_app_qry);
 											</label>
 											<!-- hidden -->
 											<div hidden class="col-md-2 col-sm-2 ">
-												<input value="<?php echo $DTIdateissued ; ?>" id="DTIdateissued" name="DTIdateissued" class="date-picker form-control" placeholder="dd-mm-yyyy" type="text" required="required" type="text" onfocus="this.type='date'" onmouseover="this.type='date'" onclick="this.type='date'" onblur="this.type='text'" onmouseout="timeFunctionLong(this)">												
+							<input value="<?php echo $DTIdateissued ; ?>" id="DTIdateissued" name="DTIdateissued" type="hidden">								
 											</div>
 											</div>
 											<!-- hidden -->
@@ -214,7 +214,7 @@ $lumber_ap_row_c_endorsement = mysqli_fetch_assoc($lumber_app_qry);
 											<label class="col-form-label col-md-2 col-sm-2 label-align"> Expiry Date <span class="required">*</span>
 											</label>
 											<div class="col-md-2 col-sm-2 ">
-												<input value="<?php echo $DTIdateexpiry ; ?>" id="DTIdateexpiry" name="DTIdateexpiry" class="date-picker form-control" placeholder="dd-mm-yyyy" type="text" required="required" type="text" onfocus="this.type='date'" onmouseover="this.type='date'" onclick="this.type='date'" onblur="this.type='text'" onmouseout="timeFunctionLong(this)">												
+							<input value="<?php echo $DTIdateexpiry ; ?>" id="DTIdateexpiry" name="DTIdateexpiry" type="hidden">								
 											</div>
 											</div>
 										
