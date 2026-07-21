@@ -81,12 +81,16 @@
          <p style="width:100%; text-align: center; font-size: 17px; line-height: 12px">Registration No. <strong><u><?php echo $regnumber;?> (<?php echo $status ; ?>)</u></strong></p>
          <p style="width:100%; text-align: center; line-height: 5px; font-size: 13px">This is to certify that,</p>
          </td>
-         <td style="width: 20%;" style="background-image:url('records.png'); background-size: 200px 90px; background-repeat: no-repeat;">
-         <p style="text-align: left; padding-top: 48px; padding-left: 65px; line-height: 10px; font-size: 10px"> <?php echo $date; ?></br>
-            GANDE G. BAGOT </br>
-                    LD-<?php echo date("Y") . "-"; ?><?php echo $lumber_app_id; ?>
-             </p>
-         </td>
+         <?php $releaseStampDate = !empty($signatory_date) ? date('Y-m-d', strtotime($signatory_date)) : date('Y-m-d'); ?>
+         <?php $releaseStampName = ($releaseStampDate >= '2026-05-12') ? 'JULIE Y. MONTALBAN' : 'GANDE G. BAGOT'; ?>
+         <td style="width: 20%; <?php echo $show_records_stamp ? "background-image:url('" . ($releaseStampName === 'JULIE Y. MONTALBAN' ? 'records2.png' : 'records.png') . "'); background-size: 200px 90px; background-repeat: no-repeat;" : ''; ?>">
+         <?php if ($show_records_stamp) { ?>
+             <p style="text-align: left; padding-top: 48px; padding-left: 65px; line-height: 10px; font-size: 10px"> <?php echo $date; ?></br>
+                <?php echo $releaseStampName; ?> </br>
+                        LD-<?php echo date("Y") . "-"; ?><?php echo $lumber_app_id; ?>
+                 </p>
+         <?php } ?>
+          </td>
         </tr>
     </table>
     
@@ -173,10 +177,33 @@
                     </p>
                 </td>
                 <td style="width:20%"></td>
-                <td style="width:40%; align-content: center">
-                    <p align="center" style="padding-right: 70px; font-size: 15px"><u><strong>MARITES M. OCAMPO</strong></u> </br>
-                    OIC, Regional Executive Director</p>
-                </td>
+				<?php
+				// Determine which signatory to show based on the latest history date.
+				$signatoryDate = !empty($signatory_date) ? date('Y-m-d', strtotime($signatory_date)) : date('Y-m-d');
+
+				if ($signatoryDate >= '2024-07-01' && $signatoryDate <= '2026-06-02') {
+					?>
+					<td style="width:40%; align-content: center; text-align:center">
+						<p style="padding-right: 70px; font-size: 15px"><u><strong>MARITESS M. OCAMPO</strong></u> </br>
+						OIC, Regional Executive Director</p>
+					</td>
+					<?php
+				} elseif ($signatoryDate >= '2026-06-03') {
+					?>
+					<td style="width:40%; align-content: center; text-align:center">
+						<p style="padding-right: 70px; font-size: 15px"><u><strong>MA. THERESA J. ALLEN</strong></u> </br>
+						OIC, Regional Executive Director</p>
+					</td>
+					<?php
+				} else {
+					?>
+					<td style="width:40%; align-content: center; text-align:center">
+						<p style="padding-right: 70px; font-size: 15px"><u><strong>MARITESS M. OCAMPO</strong></u> </br>
+						OIC, Regional Executive Director</p>
+					</td>
+					<?php
+				}
+				?>
             </tr>
         </table>
     </div>

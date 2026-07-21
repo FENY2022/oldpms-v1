@@ -199,9 +199,16 @@ $Time = date("h:i:sa");
 
 ?>
 
-                <?php
+<?php
 $stmt = $connection->query("SELECT * FROM lumber_app_doc_erow  where lumber_app_id = $l_id ");
+$display_doc_number = 0;
 while ( $row = $stmt->fetch(PDO::FETCH_ASSOC) ) {
+
+    if (($row['doc_type_name'] ?? '') === 'To Generate RED Endorsement') {
+      continue;
+    }
+
+    $display_doc_number++;
 
     $Review = 'Approved';
     $Review2 = 'For Review';
@@ -242,7 +249,7 @@ while ( $row = $stmt->fetch(PDO::FETCH_ASSOC) ) {
       echo '<div class="card card-doc h-100" data-doc-id="'.$doc_id.'">';
       echo '<div class="card-body d-flex flex-column">';
       echo '<div class="d-flex justify-content-between align-items-center mb-2">';
-      echo '<span class="badge badge-secondary badge-status">#'.htmlentities($row['Number_of_doc']).'</span>';
+      echo '<span class="badge badge-secondary badge-status">#'.htmlentities($display_doc_number).'</span>';
       echo '<span class="badge badge-warning badge-status badge-status-doc">For Review</span>';
       echo '</div>';
       echo '<div class="text-center mb-3"><i class="fas '.$icon.' fa-3x text-info"></i></div>';

@@ -38,6 +38,17 @@ $suffix = $result['Suffix'];
 $Flow_stat = $result['Flow_stat'];
 $date_applied = date('Y-m-d', strtotime($result['date_applied']));
 
+$history_qry = mysqli_query($con, "
+    SELECT Date
+    FROM client_client_document_history
+    WHERE lumber_app_id = $lumber_app_id
+      AND Title = 'PENRO FUU'
+    ORDER BY id DESC
+    LIMIT 1
+");
+$history_row = mysqli_fetch_assoc($history_qry);
+$display_date = !empty($history_row['Date']) ? date('F j, Y', strtotime($history_row['Date'])) : date('F j, Y');
+
 
 $lumber_app = "SELECT * FROM order_of_payment where lumber_app_id = $lumber_app_id";
 $lumber_app_qry = mysqli_query($con, $lumber_app);
@@ -223,8 +234,8 @@ if ($result) {
                                     $office_under = $lumber_ap_row['office_under'];
                                     $bussiness_name = $lumber_ap_row['bussiness_name'];
                                     $full_address = $lumber_ap_row['full_address'];
-                                    $date_ = $lumber_ap_row['date_'];
-                                    $date_penro = $lumber_ap_row['date_penro'];
+                    $date_ = $lumber_ap_row['date_'];
+                    $date_penro = $lumber_ap_row['date_penro'];
                                     $ldname = $lumber_ap_row['ldname'];
                                     $owner = $lumber_ap_row['owner'];
                                     $ldaddress = $lumber_ap_row['ldaddress'];

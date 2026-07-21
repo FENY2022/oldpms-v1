@@ -65,6 +65,11 @@ $datepaid = $lumber_ap_row['datepaid'];
 $status = $lumber_ap_row['status'];
 
 
+$recent_history_sql = "SELECT `Date` FROM client_client_document_history WHERE lumber_app_id = $lumber_app_id ORDER BY id DESC LIMIT 1";
+$recent_history_qry = mysqli_query($con, $recent_history_sql);
+$recent_history_row = mysqli_fetch_assoc($recent_history_qry);
+$signatory_date = $recent_history_row['Date'] ?? '';
+
 $dateissued = '';
 $dateexpiry = '';
 

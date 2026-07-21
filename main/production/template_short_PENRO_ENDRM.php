@@ -94,6 +94,9 @@ if (isset($_POST['lumber_app_id']))
 		<?php
 		$application_label = (isset($Status_) && strtolower($Status_) === 'renewal') ? 'RENEWAL APPLICATION' : 'NEW APPLICATION';
 		$application_label_text = strtolower($application_label);
+		if (empty($display_date)) {
+			$display_date = !empty($date_) ? $date_ : (!empty($date_penro) ? $date_penro : date('F j, Y'));
+		}
 		?>
 		 <tr>
 		 <td style="width:13%;padding-bottom:37px;"><strong>SUBJECT</strong></td>
@@ -105,7 +108,7 @@ if (isset($_POST['lumber_app_id']))
 		 <tr>
 		 <td style="width:13%;"><strong>DATE</strong></td>
 		 <td style="width:7%;"><strong>:</strong></td>
-		 <td style="width:80%;text-transform:uppercase;text-align:justify;"><strong><?php echo $date_ ; ?></strong></td>
+		 <td style="width:80%;text-transform:uppercase;text-align:justify;"><strong><?php echo $display_date; ?></strong></td>
 		 </tr>
 	</table>
     <br/>

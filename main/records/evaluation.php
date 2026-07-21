@@ -2,6 +2,10 @@
                         require_once "../../processphp/config.php";
                         // session_start();
 						$l_id = $_GET['lumber_app_id'];
+                        $app_qry = $connection->query("SELECT bussiness_name, full_address FROM lumber_application WHERE lumber_app_id = $l_id LIMIT 1");
+                        $app_row = $app_qry ? $app_qry->fetch(PDO::FETCH_ASSOC) : null;
+                        $bussiness_name = $app_row['bussiness_name'] ?? '';
+                        $full_address = $app_row['full_address'] ?? '';
             // include 'prc_approve_modal/evaluationlRORecommender.php';
                    ?>
 
@@ -199,7 +203,11 @@ if ( isset($_POST['Release'])) {
                                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">x</button>
                                       </div>
                                       <div class="modal-body">
-                                          <iframe src="generate_viewLumberEdealer.php?lumber_app_id=' . $row['lumber_app_id']  . '" style="width: 100%; height: 85vh; border: none;"></iframe>
+                                          <div id="viewPermitLoading' . $row['lumber_app_id'] . '" class="text-center py-5">
+                                              <i class="fas fa-spinner fa-spin fa-3x text-primary"></i>
+                                              <p class="mt-2 mb-0">Loading document...</p>
+                                          </div>
+                                          <iframe src="generate_viewLumberEdealer.php?lumber_app_id=' . $row['lumber_app_id']  . '" style="width: 100%; height: 85vh; border: none; display:none;" onload="document.getElementById(\'viewPermitLoading' . $row['lumber_app_id'] . '\').style.display=\'none\'; this.style.display=\'block\';"></iframe>
                                       </div>
                                       <div class="modal-footer">
                                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Close</button>
@@ -233,12 +241,12 @@ if ( isset($_POST['Release'])) {
 							  <!-- <li> <form method="POST"><button  class="btn-primary btn-sm btn-round btn ml-0" name="Release"></form> -->
 
 
-							  <li>  <a href="release.php?lumber_app_id=<?php echo $lumber_app_id; ?>" class="btn-primary btn-sm btn-round btn ml-0">                                       	
-									   <span class="text align-content-center text-white"><strong>Release</strong></span>
-										<span class="icon ml-2">
-											   <i class="fas fa-check-to-slot text-white"></i>
-										</span>
-							  </li></a>
+				  <li>  <button type="button" class="btn-primary btn-sm btn-round btn ml-0" data-bs-toggle="modal" data-bs-target="#approveModal">                                       	
+					   <span class="text align-content-center text-white"><strong>Release</strong></span>
+						<span class="icon ml-2">
+							   <i class="fas fa-check-to-slot text-white"></i>
+						</span>
+				  </button></li>
 
 
 
@@ -263,7 +271,35 @@ if ( isset($_POST['Release'])) {
         <?php
 		   require_once("footer.php")
 		  ?>
-        <!-- /footer content -->
+	        <!-- /footer content -->
+      </div>
+    </div>
+
+    <div class="modal fade" id="approveModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-body text-center py-5 px-4">
+            <div class="mb-4">
+              <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10" style="width:80px;height:80px;background:rgba(40,167,69,0.1);">
+                <i class="fas fa-check-double fa-3x text-success"></i>
+              </span>
+            </div>
+            <h4 class="fw-bold mb-2">Confirm Release</h4>
+            <p class="text-muted mb-1">You are about to release this application.</p>
+            <p class="text-muted mb-0"><strong><?php echo htmlspecialchars($bussiness_name); ?></strong></p>
+            <p class="text-muted small"><?php echo htmlspecialchars($full_address); ?></p>
+            <hr class="my-4">
+            <p class="text-warning mb-0"><i class="fas fa-exclamation-triangle me-1"></i> This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer justify-content-center border-0 pt-0 pb-4 px-4">
+            <button type="button" class="btn btn-outline-secondary btn-lg px-4" data-bs-dismiss="modal">
+              <i class="fas fa-times me-2"></i>Cancel
+            </button>
+            <a href="release.php?lumber_app_id=<?php echo $lumber_app_id; ?>" class="btn btn-success btn-lg px-5 shadow-sm">
+              <i class="fas fa-check me-2"></i>Release
+            </a>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -143,9 +143,10 @@
 											<th>Date Applied</th>
 											<th>CENROs Concerned</th>
 											<th>New / Renewal</th>
-											<th>Action</th>
-                                            <th>Status</th>                                           
-                                        </tr>
+	                                            <th>Action</th>
+	                                            <th>Status</th>
+	                                            <th>Recent History</th>                                           
+	                                        </tr>
                                      </thead>                                    
                                     <tbody>
    
@@ -184,13 +185,26 @@
 			$safeValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 			return '<img src="https://qrcode.tec-it.com/API/QRCode?data=' . urlencode($value) . '" class="img-fluid" alt="QR code for ' . $safeValue . '" width="' . (int) $size . '" height="' . (int) $size . '">';
 		}
+
+		function renderRecentHistoryLink($row) {
+			$recentHistory = trim((string) ($row['recent_history'] ?? ''));
+
+			if ($recentHistory === '' || $recentHistory === '-') {
+				return '-';
+			}
+
+			$lumberAppId = urlencode((string) ($row['lumber_app_id'] ?? ''));
+			$businessName = urlencode((string) ($row['bussiness_name'] ?? ''));
+
+			return '<a href="../../client/doctracker.php?lumber_app_id=' . $lumberAppId . '&bussiness_name=' . $businessName . '" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-underline">' . htmlentities($recentHistory) . '</a>';
+		}
 	        $dateyear = date('Y');
 
 
 
 
 		  $l_id = '17';
-          $stmt = $connection->query("SELECT perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix
+		  $stmt = $connection->query("SELECT perm_lname, lumber_app_id, uniqid_lapp, perm_fname, full_address, application_type, Status, date_applied, date_recieve, bussiness_name, Office, Suffix, (SELECT CONCAT(Title, ' - ', Date, ' ', Time) FROM client_client_document_history WHERE lumber_app_id = lumber_application.lumber_app_id ORDER BY id DESC LIMIT 1) as recent_history
 		  FROM lumber_application 
 		  where Flow_stat >= $l_id");
 
@@ -285,12 +299,15 @@
   
             echo('<a class="btn btn-warning" href="evaluation.php?lumber_app_id='.$row['lumber_app_id'].'">Review</a>');
             echo("</td><td>");
-            echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
-            }
-  
-  
+	            echo('<a class="badge badge-warning" > '.$row['Status'].' </a>');
+	            }
+
+	                echo("</td><td>");
+	                echo renderRecentHistoryLink($row);
+	  
+	  
                 
-  
+	  
 
 				  
 

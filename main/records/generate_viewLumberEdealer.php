@@ -8,7 +8,19 @@
         use Dompdf\Options;
         include "../../processphp/config.php";
 
-        $lumber_app_id = $_GET["lumber_app_id"];
+        if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+        }
+
+        $lumber_app_id = (int) $_GET["lumber_app_id"];
+        $show_records_stamp = true;
+
+        if (isset($_SESSION["user_id"])) {
+                $userid = (int) $_SESSION["user_id"];
+                $user_qry = mysqli_query($con, "SELECT du.user_role_id FROM denr_users du WHERE du.user_id = $userid LIMIT 1");
+                $user_row = mysqli_fetch_assoc($user_qry);
+                $show_records_stamp = ((int) ($user_row['user_role_id'] ?? 0)) !== 17;
+        }
 
 
 
@@ -35,6 +47,14 @@
         $lumber_ap_row4 = mysqli_fetch_assoc($lumber_app_qry);
         $date_release = $lumber_ap_row4['Date'];
 
+        $recent_history_sql = "SELECT `Date` FROM client_client_document_history WHERE lumber_app_id = $lumber_app_id ORDER BY id DESC LIMIT 1";
+        $recent_history_qry = mysqli_query($con, $recent_history_sql);
+        $recent_history_row = mysqli_fetch_assoc($recent_history_qry);
+        $signatory_date = $recent_history_row['Date'] ?? '';
+        if (!empty($recent_history_row['Date'])) {
+                $date_release = $recent_history_row['Date'];
+        }
+
         
 
 
@@ -46,7 +66,8 @@ $ldaddress = $lumber_ap_row['ldaddress'];
 
 
 function getFullMonthNameFromDate($date2){
-        $monthName = date('F d, Y', strtotime($date2));
+        $timestamp = strtotime($date2);
+        $monthName = $timestamp ? date('F d, Y', $timestamp) : date('F d, Y');
         return $monthName;
         
 }
@@ -57,6 +78,7 @@ function getFullMonthNameFromDate($date2){
 // echo getFullMonthNameFromDate($date2);
 
 $date =	getFullMonthNameFromDate($date2);
+$date_release = strtotime($date_release) ? $date_release : date('Y-m-d');
 
 
 

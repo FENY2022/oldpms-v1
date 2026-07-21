@@ -192,12 +192,12 @@ echo '</tr>';
 			 OIC, Regional Executive Director </p></td> -->
 
 			<?php
-			// Determine which signatory to show based on current month-day
-			$md = date('m-d');
+			// Determine which signatory to show based on the latest history date.
+			$signatoryDate = !empty($signatory_date) ? date('Y-m-d', strtotime($signatory_date)) : date('Y-m-d');
 
-			// MARITESS M. OCAMPO: July 15 through May 30 (crosses year boundary)
-			// MA. THERESA J. ALLEN: June 3 through July 14
-			if ($md >= '07-15' || $md <= '05-30') {
+			// MARITESS: 2024-07-01 to 2026-06-02
+			// ALLEN: 2026-06-03 onward
+			if ($signatoryDate >= '2024-07-01' && $signatoryDate <= '2026-06-02') {
 				?>
 				<td style="width:35%; text-align:center;">
 					<p style="font-size: 14px; padding-right: 0px;">
@@ -206,7 +206,7 @@ echo '</tr>';
 					</p>
 				</td>
 				<?php
-			} elseif ($md >= '06-03' && $md <= '07-14') {
+			} elseif ($signatoryDate >= '2026-06-03') {
 				?>
 				<td style="width:35%; text-align:center;">
 					<p style="font-size: 14px; padding-right: 0px;">
@@ -216,7 +216,7 @@ echo '</tr>';
 				</td>
 				<?php
 			} else {
-				// Fallback to MARITESS for any unspecified small gaps
+				// Fallback to MARITESS for dates before the new assignment.
 				?>
 				<td style="width:35%; text-align:center;">
 					<p style="font-size: 14px; padding-right: 0px;">
