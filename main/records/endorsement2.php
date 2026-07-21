@@ -198,7 +198,7 @@ $dtp1 = ($datemonth .' '. date('d') .', '. date('Y')) ;
 
 											<?php
 
-												echo '<button type="button" id="prepareAcknowledgementBtn" class="btn btn-success" data-toggle="modal" data-target="#acknowledgementModal">Prepare Acknowledgement</button>';
+												echo '<button type="button" id="prepareAcknowledgementBtn" class="btn btn-success">Prepare Acknowledgement</button>';
 											?>
 
 											</div>
@@ -350,16 +350,14 @@ $dtp1 = ($datemonth .' '. date('d') .', '. date('Y')) ;
 		$(document).ready(function() {
 			$('#prepareAcknowledgementBtn').on('click', function() {
 				var form = document.getElementById('acknowledgementForm');
-				var frame = document.getElementById('acknowledgementFrame');
 
 				if (!form.checkValidity()) {
 					form.reportValidity();
 					return;
 				}
 
-				frame.src = 'about:blank';
-				form.target = 'acknowledgementFrame';
-				form.submit();
+				$('#acknowledgementModal').modal('show');
+				document.getElementById('acknowledgementFrame').src = 'acknowledgement_viewer.php?t=' + new Date().getTime();
 			});
 
 			$('#prepareCfBtn').on('click', function() {

@@ -52,11 +52,6 @@ $dompdf->render();
 $dompdf->addInfo("Title", "ACKNOWLEDGEMENT"); // "add_info" in earlier versions of Dompdf
 
 /**
- * Send the PDF to the browser
- */
-$dompdf->stream("acknowledgement.pdf", array("Attachment" => false));
-
-/**
  * Save the PDF file locally
  */
 $output = $dompdf->output();
@@ -233,4 +228,6 @@ if ($lumber_ap_row) {
 
 
 
+$dompdf->stream("acknowledgement.pdf", array("Attachment" => false));
+exit;
 ?>

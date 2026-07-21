@@ -109,7 +109,7 @@
     <br/>
    <hr style="width:100%;text-align:left;margin-left:0">
    <br/>
-    <p class="col-sm-9" style="text-align:justify;"> &nbsp; &nbsp; &nbsp; &nbsp; Attached is a machine copy of the Certificate of Registration as Lumber Dealer of the above-subject permittee under your area of jurisdiction. The same was approved on {{ date }} with a one (1) year validity.</p>
+    <p class="col-sm-9" style="text-align:justify;"> &nbsp; &nbsp; &nbsp; &nbsp; Attached is an electronic copy of the Certificate of Registration as Lumber Dealer of the above-subject permittee under your area of jurisdiction. The same was approved on {{ date }} with a one (1) year validity.</p>
     <p class="col-sm-9" style="text-align:justify;"> &nbsp; &nbsp; &nbsp; &nbsp; Please see terms and conditions indicated in the attached sheet formed part of the registration certificate for your reference and strict monitoring.</p>
 <div id="example2">
     <p class="col-sm-9" style="text-align:justify;"> &nbsp; &nbsp; &nbsp; &nbsp; For information and compliance.</p>

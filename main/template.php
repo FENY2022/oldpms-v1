@@ -62,7 +62,7 @@
 		 <tr>
 		 <td style="width:13%;"><strong>FROM</strong></td>
 		 <td style="width:7%;"><strong>:</strong></td>
-		 <td style="width:80%;"><strong>THE CHIEF, LPDD</strong></td>
+		 <td style="width:80%;"><strong>ARD FOR TECHNICAL SERVICES</strong></td>
 		 </tr>
 	</table>
 	</br>
