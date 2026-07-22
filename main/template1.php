@@ -79,7 +79,7 @@
 			 
 		 <h1 style="width:100%;text-align: center; line-height: 0px; font-size: 18px;"><strong>CERTIFICATE OF REGISTRATION</strong></h1>
 		 <p style="width:100%;text-align: center; font-size: 14px; line-height: 1px">Registration No. <strong><u><?php echo $regnumber ; ?> (<?php echo $status; ?>)</u></strong></p>
-	
+		  <br>
 		 <p style="width:100%;text-align: center; line-height: 1px; font-size: 14px">This is to certify that,</p>
 		 
 		 <h2 style="width:100%;text-align: center; text-transform: uppercase; line-height: 1px; font-size: 16px;"><u><strong><?php echo $ldname; ?></strong></strong></u></h2>
@@ -143,10 +143,10 @@ echo '</tr>';
         </tbody>
 
 
-<br><br>
+<br>
 
     </table>
-	</br>
+
 	<dd class="col-sm-9" style="text-align:justify; font-size: 14px; text-indent: 2em;">The place of its/his/her business operation is in <u><strong><?php echo $ldaddress; ?></strong></u>. This Certificate of Registration is non-negotiable and non-transferable and, unless sooner terminated, will expire on <u><strong>{{dateexpiry}}</strong></u>.</dd>
 	</br>
 	<dd class="col-sm-9" style="text-align:justify; font-size: 14px; text-indent: 2em;">Issued on <u><strong>{{dateissued}}</strong></u> at <u><strong>DENR-13, Ambago, Butuan City, Agusan del Norte, Philippines</strong></u>.</dd>
@@ -229,12 +229,16 @@ echo '</tr>';
 			}
 			?>
 
+			</tr>
+		</table>
+		<p style="margin-top: 18px; text-align: center; font-size: 9pt; font-style: italic;">
+			The original of this document is in digital format and is maintained in the DENR Caraga electronic signature system.
+		</p>
 
 
 
-</div>	
-		</tr>
-	</table>
+
+</div>
 </div>
  </body>
  </html>
