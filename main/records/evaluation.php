@@ -290,14 +290,15 @@ if ( isset($_POST['Release'])) {
             <p class="text-muted small"><?php echo htmlspecialchars($full_address); ?></p>
             <hr class="my-4">
             <p class="text-warning mb-0"><i class="fas fa-exclamation-triangle me-1"></i> This action cannot be undone.</p>
+            <div id="releaseErrorBox" class="alert alert-danger mt-4 mb-0 text-start" style="display:none;"></div>
           </div>
           <div class="modal-footer justify-content-center border-0 pt-0 pb-4 px-4">
             <button type="button" class="btn btn-outline-secondary btn-lg px-4" data-bs-dismiss="modal">
               <i class="fas fa-times me-2"></i>Cancel
             </button>
-            <a href="release.php?lumber_app_id=<?php echo $lumber_app_id; ?>" class="btn btn-success btn-lg px-5 shadow-sm">
+            <button type="button" id="releaseConfirmBtn" class="btn btn-success btn-lg px-5 shadow-sm" data-lumber-app-id="<?php echo htmlspecialchars($l_id, ENT_QUOTES, 'UTF-8'); ?>">
               <i class="fas fa-check me-2"></i>Release
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -332,6 +333,51 @@ if ( isset($_POST['Release'])) {
 
     <!-- Custom Theme Scripts -->
     <script src="../build/js/custom.min.js"></script>
+
+    <script>
+    (function() {
+        var releaseButton = document.getElementById('releaseConfirmBtn');
+        if (!releaseButton) return;
+
+        releaseButton.addEventListener('click', async function() {
+            var errorBox = document.getElementById('releaseErrorBox');
+            var lumberAppId = this.getAttribute('data-lumber-app-id');
+
+            errorBox.style.display = 'none';
+            errorBox.textContent = '';
+            this.disabled = true;
+
+            try {
+                var formData = new FormData();
+                formData.append('lumber_app_id', lumberAppId);
+
+                var response = await fetch('release.php', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                var data = await response.json();
+
+                if (!data.success) {
+                    errorBox.textContent = data.message || 'Release failed.';
+                    errorBox.style.display = 'block';
+                    return;
+                }
+
+                window.location.href = 'action.php';
+            } catch (error) {
+                errorBox.textContent = error.message || 'Release failed.';
+                errorBox.style.display = 'block';
+            } finally {
+                this.disabled = false;
+            }
+        });
+    })();
+    </script>
 
   </body>
 </html>

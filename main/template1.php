@@ -162,7 +162,7 @@ echo '</tr>';
 	</table>
 
 	<table border=0 class="center" style="width:90%">
-		<tr>
+		<tr>\
 			<td style="width:15%"> <p style="font-size: 10px"> Application Fee: </br>
 					 O.R. No. </br>
 					 Date:

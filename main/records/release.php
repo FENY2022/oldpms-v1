@@ -1,9 +1,53 @@
 <?php
-// Ensure the required database connection file is included
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once "../../processphp/config.php";
+require_once "../mail/send_release_email.php";
+
+header('Content-Type: application/json; charset=UTF-8');
+
+function jsonReleaseResponse($success, $message)
+{
+    echo json_encode(['success' => $success, 'message' => $message]);
+    exit;
+}
 
 
-$lumber_app_id = $_GET['lumber_app_id'];
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    jsonReleaseResponse(false, 'Invalid request method.');
+}
+
+if (empty($_SESSION['user_id'])) {
+    jsonReleaseResponse(false, 'Unauthorized access.');
+}
+
+$lumber_app_id = filter_input(INPUT_POST, 'lumber_app_id', FILTER_VALIDATE_INT);
+if (!$lumber_app_id) {
+    jsonReleaseResponse(false, 'Invalid lumber application ID.');
+}
+
+$recipientStmt = $connection->prepare("SELECT CONCAT(uc.firstname, ' ', uc.mid_name, ' ', uc.lastname) AS client_name, uc.email, la.bussiness_name
+    FROM lumber_application la
+    INNER JOIN user_client uc ON uc.client_id = la.client_id
+    WHERE la.lumber_app_id = :lumber_app_id
+    LIMIT 1");
+$recipientStmt->execute([':lumber_app_id' => $lumber_app_id]);
+$recipientRow = $recipientStmt->fetch(PDO::FETCH_ASSOC);
+$recipientEmail = $recipientRow['email'] ?? '';
+$recipientName = trim(preg_replace('/\s+/', ' ', $recipientRow['client_name'] ?? 'Client'));
+$businessName = $recipientRow['bussiness_name'] ?? '';
+
+if (empty($recipientEmail)) {
+    jsonReleaseResponse(false, 'No client email found for this application.');
+}
+
+try {
+    sendReleaseEmail($recipientEmail, $recipientName);
+} catch (Throwable $e) {
+    jsonReleaseResponse(false, 'Email sending failed for ' . $recipientEmail . ': ' . $e->getMessage());
+}
 
 
 
@@ -111,16 +155,8 @@ try {
         ':lumber_app_id' => $lumber_app_id
     ));
 
-    // JavaScript alert for success and redirect
-    echo "<script>
-        alert('Application successfully released !');
-        window.location.href = 'action.php';
-    </script>";
+    jsonReleaseResponse(true, 'Application successfully released !');
 } catch (PDOException $e) {
-    // JavaScript alert for error and redirect
-    echo "<script>
-        alert('Error updating application: " . addslashes($e->getMessage()) . "');
-        window.location.href = 'action.php';
-    </script>";
+    jsonReleaseResponse(false, 'Error updating application: ' . $e->getMessage());
 }
 ?>
