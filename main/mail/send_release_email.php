@@ -5,46 +5,36 @@ if (basename(__FILE__) === basename($_SERVER['SCRIPT_FILENAME'] ?? '')) {
     exit('Forbidden');
 }
 
-require_once __DIR__ . '/../../processphp/config.php';
-require_once __DIR__ . '/../../sendemail/phpmailer/src/Exception.php';
-require_once __DIR__ . '/../../sendemail/phpmailer/src/PHPMailer.php';
-require_once __DIR__ . '/../../sendemail/phpmailer/src/SMTP.php';
-
-use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\PHPMailer;
-
 function sendReleaseEmail(string $recipientEmail, string $recipientName): void
 {
-    $mail = new PHPMailer(true);
+    $emailUrl = 'https://o-ldpms.denr.gov.ph/sendemail/send.php';
 
-    try {
-        $mail->isSMTP();
-        $mail->Host = SMTP_HOST;
-        $mail->SMTPAuth = true;
-        $mail->Username = SMTP_USERNAME;
-        $mail->Password = SMTP_PASSWORD;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = SMTP_PORT;
+    $emailBody = '
+        <p>Good day ' . htmlspecialchars($recipientName, ENT_QUOTES, 'UTF-8') . ',</p>
+        <p>Your Certificate of Registration for Lumber Dealer has been approved and released.</p>
+        <p>Please log in to your client dashboard to complete the remaining CSS requirements.</p>
+        <p>Thank you.</p>
+    ';
 
-        $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-        $mail->addAddress($recipientEmail, $recipientName);
-        $mail->isHTML(true);
-        $mail->Subject = 'Certificate of Registration Released';
-        $mail->Body = '
-            <p>Good day ' . htmlspecialchars($recipientName, ENT_QUOTES, 'UTF-8') . ',</p>
-            <p>Your Certificate of Registration for Lumber Dealer has been approved and released.</p>
-            <p>Please log in to your client dashboard to complete the remaining CSS requirements.</p>
-            <p>Thank you.</p>
-        ';
-        $mail->AltBody = 'Good day ' . $recipientName . ",\n\nYour Certificate of Registration for Lumber Dealer has been approved and released. Please log in to your client dashboard to complete the remaining CSS requirements.\n\nThank you.";
+    $queryParams = http_build_query([
+        'send' => 1,
+        'email' => $recipientEmail,
+        'Subject' => 'Certificate of Registration Released',
+        'message' => $emailBody,
+        'yourname' => 'O-LDPMS'
+    ]);
 
-        $mail->send();
-    } catch (Exception $e) {
-        $mailError = isset($mail) ? $mail->ErrorInfo : $e->getMessage();
-        error_log('Release email failed for ' . $recipientEmail . ': ' . $mailError);
-        throw new RuntimeException('SMTP Error for ' . $recipientEmail . ': ' . $mailError, 0, $e);
-    } catch (Throwable $e) {
-        error_log('Release email setup failed for ' . $recipientEmail . ': ' . $e->getMessage());
-        throw new RuntimeException('SMTP Error for ' . $recipientEmail . ': ' . $e->getMessage(), 0, $e);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $emailUrl . '?' . $queryParams);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    $error = curl_error($ch);
+    curl_close($ch);
+
+    if ($error || $response === false) {
+        error_log('Release email failed for ' . $recipientEmail . ': cURL error: ' . $error);
+        throw new RuntimeException('Email sending failed for ' . $recipientEmail . ': cURL error: ' . $error);
     }
 }

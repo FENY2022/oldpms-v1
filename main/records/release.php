@@ -12,7 +12,7 @@ function jsonReleaseResponse($success, $message)
 {
     echo json_encode(['success' => $success, 'message' => $message]);
     exit;
-}
+ }
 
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -43,14 +43,17 @@ if (empty($recipientEmail)) {
     jsonReleaseResponse(false, 'No client email found for this application.');
 }
 
+$emailSent = false;
+$emailMessage = '';
 try {
     sendReleaseEmail($recipientEmail, $recipientName);
+    $emailSent = true;
+    $emailMessage = 'Email notification sent to ' . $recipientEmail;
 } catch (Throwable $e) {
-    jsonReleaseResponse(false, 'Email sending failed for ' . $recipientEmail . ': ' . $e->getMessage());
+    $emailSent = false;
+    $emailMessage = 'Email sending failed: ' . $e->getMessage();
+    error_log('Release email failed for ' . $recipientEmail . ': ' . $e->getMessage());
 }
-
-
-
 
 $date2 = date('m/d/y');
 
@@ -155,8 +158,20 @@ try {
         ':lumber_app_id' => $lumber_app_id
     ));
 
-    jsonReleaseResponse(true, 'Application successfully released !');
+    echo json_encode([
+        'success' => true,
+        'message' => 'Application released successfully!',
+        'email_sent' => $emailSent,
+        'email_message' => $emailMessage
+    ]);
+    exit;
 } catch (PDOException $e) {
-    jsonReleaseResponse(false, 'Error updating application: ' . $e->getMessage());
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error updating application: ' . $e->getMessage(),
+        'email_sent' => $emailSent,
+        'email_message' => $emailMessage
+    ]);
+    exit;
 }
 ?>

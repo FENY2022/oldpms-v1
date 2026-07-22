@@ -275,7 +275,7 @@ if ( isset($_POST['Release'])) {
       </div>
     </div>
 
-    <div class="modal fade" id="approveModal" tabindex="-1" aria-hidden="true">
+     <div class="modal fade" id="approveModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content border-0 shadow">
           <div class="modal-body text-center py-5 px-4">
@@ -297,8 +297,30 @@ if ( isset($_POST['Release'])) {
               <i class="fas fa-times me-2"></i>Cancel
             </button>
             <button type="button" id="releaseConfirmBtn" class="btn btn-success btn-lg px-5 shadow-sm" data-lumber-app-id="<?php echo htmlspecialchars($l_id, ENT_QUOTES, 'UTF-8'); ?>">
-              <i class="fas fa-check me-2"></i>Release
+              <span id="releaseBtnText"><i class="fas fa-check me-2"></i>Release</span>
+              <span id="releaseBtnSpinner" style="display:none;"><i class="fas fa-spinner fa-spin me-2"></i>Releasing...</span>
             </button>
+          </div>
+        </div>
+      </div>
+     </div>
+
+     <div class="modal fade" id="releaseResultModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-body text-center py-5 px-4">
+            <div class="mb-4">
+              <span id="releaseResultIcon" class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:80px;height:80px;"></span>
+            </div>
+            <h4 id="releaseResultTitle" class="fw-bold mb-2"></h4>
+            <p id="releaseResultMessage" class="text-muted mb-3"></p>
+            <hr class="my-4">
+            <div id="releaseEmailStatus" class="text-start mb-3"></div>
+          </div>
+          <div class="modal-footer justify-content-center border-0 pt-0 pb-4 px-4">
+            <a href="action.php" class="btn btn-primary btn-lg px-5 shadow-sm">
+              <i class="fas fa-arrow-left me-2"></i>Go Back
+            </a>
           </div>
         </div>
       </div>
@@ -342,10 +364,16 @@ if ( isset($_POST['Release'])) {
         releaseButton.addEventListener('click', async function() {
             var errorBox = document.getElementById('releaseErrorBox');
             var lumberAppId = this.getAttribute('data-lumber-app-id');
+            var btnText = document.getElementById('releaseBtnText');
+            var btnSpinner = document.getElementById('releaseBtnSpinner');
+            var cancelBtn = document.querySelector('#approveModal .btn-outline-secondary');
 
             errorBox.style.display = 'none';
             errorBox.textContent = '';
             this.disabled = true;
+            btnText.style.display = 'none';
+            btnSpinner.style.display = 'inline';
+            if (cancelBtn) cancelBtn.disabled = true;
 
             try {
                 var formData = new FormData();
@@ -368,12 +396,35 @@ if ( isset($_POST['Release'])) {
                     return;
                 }
 
-                window.location.href = 'action.php';
+                $('#approveModal').modal('hide');
+
+                var resultIcon = document.getElementById('releaseResultIcon');
+                var resultTitle = document.getElementById('releaseResultTitle');
+                var resultMessage = document.getElementById('releaseResultMessage');
+                var emailStatus = document.getElementById('releaseEmailStatus');
+
+                resultIcon.innerHTML = '<i class="fas fa-check-double fa-3x text-success"></i>';
+                resultIcon.style.background = 'rgba(40,167,69,0.1)';
+                resultTitle.textContent = 'Application Released Successfully!';
+                resultTitle.className = 'fw-bold mb-2 text-success';
+                resultMessage.textContent = data.message || '';
+
+                if (data.email_sent) {
+                    emailStatus.innerHTML = '<div class="alert alert-success mb-0"><i class="fas fa-envelope me-2"></i>' + (data.email_message || 'Email notification sent successfully.') + '</div>';
+                } else {
+                    emailStatus.innerHTML = '<div class="alert alert-warning mb-0"><i class="fas fa-exclamation-triangle me-2"></i>' + (data.email_message || 'Email notification could not be sent.') + '</div>';
+                }
+
+                $('#releaseResultModal').modal('show');
+
             } catch (error) {
                 errorBox.textContent = error.message || 'Release failed.';
                 errorBox.style.display = 'block';
             } finally {
-                this.disabled = false;
+                releaseButton.disabled = false;
+                btnText.style.display = 'inline';
+                btnSpinner.style.display = 'none';
+                if (cancelBtn) cancelBtn.disabled = false;
             }
         });
     })();
