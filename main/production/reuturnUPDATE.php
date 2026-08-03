@@ -328,6 +328,59 @@ if (isset($_POST['upload_doc7'])) {
     }
 }
 
+if (isset($_POST['upload_doc8'])) {
+    $lumber_app_id = $_POST['lumber_app_id'];
+
+    $img_name = $_FILES['doc8_file']['name'];
+    $img_size = $_FILES['doc8_file']['size'];
+    $tmp_name = $_FILES['doc8_file']['tmp_name'];
+    $error = $_FILES['doc8_file']['error'];
+
+    if ($error === 0) {
+        if ($img_size > 10 * 1024 * 1024) {
+            $em = "Sorry, Document number 8 file is too large.";
+            echo "<script>alert('$em'); window.location.href='reuturnUPDATE.php?lumber_app_id=$lumber_app_id';</script>";
+        } else {
+            $img_ex = pathinfo($img_name, PATHINFO_EXTENSION);
+            $img_ex_lc = strtolower($img_ex);
+            $allowed_exs = array("jpg", "jpeg", "png", "pdf");
+
+            if (in_array($img_ex_lc, $allowed_exs)) {
+                $new_img_name = uniqid("PDF-", true).'.'.$img_ex_lc;
+                $img_upload_path = '../../processphp/clientupload/uploads/'.$new_img_name;
+                move_uploaded_file($tmp_name, $img_upload_path);
+
+                $For_Review = 'For Review';
+                $date = date("m/d/y");
+                $doc_app_ind = '0';
+                $doc_type_name = 'Uploaded Verification Report';
+                $Number_of_doc = '8';
+                $uniqid_lap = uniqid();
+
+                upsert_lumber_app_doc_row(
+                    $connection,
+                    $lumber_app_id,
+                    $Number_of_doc,
+                    $doc_type_name,
+                    $new_img_name,
+                    $For_Review,
+                    $doc_app_ind,
+                    $date,
+                    $uniqid_lap
+                );
+
+                echo "<script>
+                    alert('Document No. 8 uploaded successfully');
+                    window.location.href = 'reuturnUPDATE.php?lumber_app_id=$lumber_app_id';
+                </script>";
+            } else {
+                $em = "You can't upload files of this type on document number 8";
+                echo "<script>alert('$em'); window.location.href='reuturnUPDATE.php?lumber_app_id=$lumber_app_id';</script>";
+            }
+        }
+    }
+}
+
 ?>
 
 
@@ -607,6 +660,38 @@ if (isset($_POST['upload_doc7'])) {
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                         <button type="submit" class="btn btn-primary" name="upload_doc7" value="1">Upload</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>';
+                }
+
+                // Add "Upload" button for document number 8
+                if ($row['Number_of_doc'] == '8') {
+                    echo '<button type="button" class="btn btn-primary btn-sm ml-1" data-toggle="modal" data-target="#uploadDoc8Modal'.$row['lumber_app_id'].'">Upload</button>';
+                    echo '
+                    <div class="modal fade" id="uploadDoc8Modal'.$row['lumber_app_id'].'" tabindex="-1" role="dialog" aria-labelledby="uploadDoc8ModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="uploadDoc8ModalLabel">Upload Document No. 8 - Uploaded Verification Report</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form method="POST" enctype="multipart/form-data">
+                                    <div class="modal-body">
+                                        <input type="hidden" name="lumber_app_id" value="'.$row['lumber_app_id'].'">
+                                        <div class="form-group">
+                                            <label for="doc8_file">Select file (JPG, JPEG, PNG, or PDF)</label>
+                                            <input type="file" class="form-control-file" id="doc8_file" name="doc8_file" accept=".jpg,.jpeg,.png,.pdf" required>
+                                        </div>
+                                        <p class="text-muted small">Max file size: 10MB</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary" name="upload_doc8" value="1">Upload</button>
                                     </div>
                                 </form>
                             </div>
